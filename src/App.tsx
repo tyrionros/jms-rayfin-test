@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { AuthPage } from '@/components/AuthPage';
+import { Sidebar } from '@/components/Sidebar';
 import { useAuth } from '@/hooks/AuthContext';
 import { HomePage } from '@/pages/HomePage';
 
@@ -28,9 +29,14 @@ function AuthGuard({
 }
 
 function App() {
+  const { signOut } = useAuth();
+
+  const handleLogout = () => {
+    void signOut();
+  };
+
   return (
     <BrowserRouter>
-      {/* ensure all new routes require auth */}
       <Routes>
         <Route
           path="/auth"
@@ -44,7 +50,12 @@ function App() {
           path="/"
           element={
             <AuthGuard requireAuth={true}>
-              <HomePage />
+              <div className="flex">
+                <Sidebar onLogout={handleLogout} />
+                <div className="flex-1 ml-20">
+                  <HomePage />
+                </div>
+              </div>
             </AuthGuard>
           }
         />

@@ -10,7 +10,7 @@ import {
 } from '@/services/todos';
 
 export function HomePage() {
-  const { signOut, user } = useAuth();
+  const { user } = useAuth();
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [loading, setLoading] = useState(true);
@@ -54,8 +54,8 @@ export function HomePage() {
   return (
     <div className="min-h-screen bg-[#FAF8F2] text-[#1B2A4A]">
       {/* ── Header: deep navy bar, cream text ── */}
-      <header className="sticky top-0 z-10 border-b border-[#DDD4C0] bg-[#1B2A4A] shadow-md">
-        <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-3.5">
+      <header className="sticky top-0 z-40 border-b border-[#DDD4C0] bg-[#1B2A4A] shadow-md">
+        <div className="flex items-center justify-between px-8 py-3.5">
           <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C4D2F] text-[#FAF8F2]">
               <CheckIcon className="h-4 w-4" />
@@ -77,17 +77,11 @@ export function HomePage() {
             >
               {initial}
             </span>
-            <button
-              onClick={() => void signOut()}
-              className="rounded-md px-2.5 py-1.5 text-sm font-medium text-[#C4956A] transition-colors hover:bg-[#243B5E] hover:text-[#FAF8F2]"
-            >
-              Sign out
-            </button>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-2xl px-5 py-10">
+      <main className="mx-auto max-w-4xl px-8 py-10">
         {/* ── Page heading ── */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight text-[#1B2A4A]">Your tasks</h1>
