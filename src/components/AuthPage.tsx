@@ -42,12 +42,12 @@ export function AuthPage() {
     : 'Sign in with Microsoft';
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-[#FAF8F2] p-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
-          <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm">
+          <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1B2A4A] text-[#FAF8F2] shadow-lg">
             <svg
-              className="h-6 w-6"
+              className="h-7 w-7"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -60,20 +60,20 @@ export function AuthPage() {
               />
             </svg>
           </span>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-bold tracking-tight text-[#1B2A4A]">
             Todo App
           </h1>
-          <p className="mt-1.5 text-sm text-slate-500">
+          <p className="mt-1.5 text-sm text-[#7C4D2F]">
             Sign in to manage your tasks.
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-[#DDD4C0] bg-white/70 p-6 shadow-sm backdrop-blur-sm">
           <button
             type="button"
             onClick={handleSignIn}
             disabled={isLoading}
-            className="flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:opacity-50"
+            className="flex w-full items-center justify-center rounded-xl bg-[#1B2A4A] px-4 py-3 text-sm font-semibold text-[#FAF8F2] shadow-sm transition-colors hover:bg-[#243B5E] disabled:opacity-50"
           >
             {msLogo}
             {buttonLabel}
@@ -86,7 +86,7 @@ export function AuthPage() {
           )}
         </div>
 
-        <p className="mt-6 text-center text-xs text-slate-400">
+        <p className="mt-6 text-center text-xs text-[#C4956A]">
           Powered by Rayfin on Microsoft Fabric
         </p>
       </div>

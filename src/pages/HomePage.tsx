@@ -52,33 +52,34 @@ export function HomePage() {
   const initial = (user?.name || user?.email || '?').charAt(0).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur">
+    <div className="min-h-screen bg-[#FAF8F2] text-[#1B2A4A]">
+      {/* ── Header: deep navy bar, cream text ── */}
+      <header className="sticky top-0 z-10 border-b border-[#DDD4C0] bg-[#1B2A4A] shadow-md">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-3.5">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C4D2F] text-[#FAF8F2]">
               <CheckIcon className="h-4 w-4" />
             </span>
-            <span className="text-base font-semibold tracking-tight">Todo</span>
+            <span className="text-base font-semibold tracking-tight text-[#FAF8F2]">Todo</span>
           </div>
           <div className="flex items-center gap-3">
             {user?.email && (
               <span
-                className="hidden text-sm text-slate-500 sm:inline"
+                className="hidden text-sm text-[#C4956A] sm:inline"
                 title={user.email}
               >
                 {user.email}
               </span>
             )}
             <span
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-600"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-[#7C4D2F] text-xs font-semibold text-[#FAF8F2]"
               title={user?.email}
             >
               {initial}
             </span>
             <button
               onClick={() => void signOut()}
-              className="rounded-md px-2.5 py-1.5 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
+              className="rounded-md px-2.5 py-1.5 text-sm font-medium text-[#C4956A] transition-colors hover:bg-[#243B5E] hover:text-[#FAF8F2]"
             >
               Sign out
             </button>
@@ -87,23 +88,25 @@ export function HomePage() {
       </header>
 
       <main className="mx-auto max-w-2xl px-5 py-10">
+        {/* ── Page heading ── */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold tracking-tight">Your tasks</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <h1 className="text-2xl font-bold tracking-tight text-[#1B2A4A]">Your tasks</h1>
+          <p className="mt-1 text-sm text-[#7C4D2F]">
             {todos.length === 0
               ? 'Add your first task to get started.'
               : `${completed.length} of ${todos.length} done`}
           </p>
           {todos.length > 0 && (
-            <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+            <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-[#DDD4C0]">
               <div
-                className="h-full rounded-full bg-indigo-600 transition-all duration-300"
+                className="h-full rounded-full bg-[#7C4D2F] transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
             </div>
           )}
         </div>
 
+        {/* ── Add task form ── */}
         <form
           onSubmit={(e) => void handleAddTodo(e)}
           className="mb-8 flex gap-2.5"
@@ -113,23 +116,24 @@ export function HomePage() {
             value={newTodoTitle}
             onChange={(e) => setNewTodoTitle(e.target.value)}
             placeholder="What needs to be done?"
-            className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+            className="flex-1 rounded-xl border border-[#DDD4C0] bg-white px-4 py-2.5 text-sm text-[#1B2A4A] placeholder-[#C4956A] shadow-sm transition-colors focus:border-[#1B2A4A] focus:outline-none focus:ring-2 focus:ring-[#1B2A4A]/20"
           />
           <button
             type="submit"
             disabled={!newTodoTitle.trim()}
-            className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-xl bg-[#1B2A4A] px-5 py-2.5 text-sm font-semibold text-[#FAF8F2] shadow-sm transition-colors hover:bg-[#243B5E] disabled:cursor-not-allowed disabled:opacity-40"
           >
             Add
           </button>
         </form>
 
+        {/* ── Todo list ── */}
         {loading ? (
           <div className="space-y-2.5">
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="h-[58px] animate-pulse rounded-xl border border-slate-200 bg-white"
+                className="h-[58px] animate-pulse rounded-xl border border-[#DDD4C0] bg-[#F0EAD8]"
               />
             ))}
           </div>
@@ -176,9 +180,9 @@ function TodoSection({
 }: RowHandlers & { label: string; count: number; todos: TodoItem[] }) {
   return (
     <section>
-      <h2 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+      <h2 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#7C4D2F]">
         {label}
-        <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold text-slate-500">
+        <span className="rounded-full bg-[#F0EAD8] px-2 py-0.5 text-[11px] font-semibold text-[#7C4D2F]">
           {count}
         </span>
       </h2>
@@ -202,13 +206,13 @@ function TodoRow({
   onDelete,
 }: RowHandlers & { todo: TodoItem }) {
   return (
-    <li className="group flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-shadow hover:shadow-md">
+    <li className="group flex items-center gap-3 rounded-xl border border-[#DDD4C0] bg-white px-4 py-3 shadow-sm transition-shadow hover:shadow-md">
       <button
         onClick={() => onToggle(todo.id, todo.isCompleted)}
         className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
           todo.isCompleted
-            ? 'border-indigo-600 bg-indigo-600 text-white'
-            : 'border-slate-300 hover:border-indigo-500'
+            ? 'border-[#7C4D2F] bg-[#7C4D2F] text-[#FAF8F2]'
+            : 'border-[#DDD4C0] hover:border-[#7C4D2F]'
         }`}
         aria-label={todo.isCompleted ? 'Mark incomplete' : 'Mark complete'}
       >
@@ -216,14 +220,14 @@ function TodoRow({
       </button>
       <span
         className={`flex-1 text-sm ${
-          todo.isCompleted ? 'text-slate-400 line-through' : 'text-slate-800'
+          todo.isCompleted ? 'text-[#C4956A] line-through' : 'text-[#1B2A4A]'
         }`}
       >
         {todo.title}
       </span>
       <button
         onClick={() => onDelete(todo.id)}
-        className="rounded-md p-1 text-slate-300 opacity-0 transition-all hover:bg-red-50 hover:text-red-500 focus:opacity-100 group-hover:opacity-100"
+        className="rounded-md p-1 text-[#DDD4C0] opacity-0 transition-all hover:bg-red-50 hover:text-red-500 focus:opacity-100 group-hover:opacity-100"
         aria-label="Delete todo"
       >
         <svg
@@ -246,8 +250,8 @@ function TodoRow({
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white/60 py-16 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-50 text-indigo-500">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#DDD4C0] bg-[#F0EAD8]/40 py-16 text-center">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#1B2A4A]/10 text-[#1B2A4A]">
         <svg
           className="h-6 w-6"
           fill="none"
@@ -262,10 +266,10 @@ function EmptyState() {
           />
         </svg>
       </div>
-      <p className="mt-4 text-sm font-medium text-slate-600">
+      <p className="mt-4 text-sm font-medium text-[#1B2A4A]">
         Nothing here yet
       </p>
-      <p className="mt-1 text-sm text-slate-400">
+      <p className="mt-1 text-sm text-[#C4956A]">
         Add your first task above to get started.
       </p>
     </div>
