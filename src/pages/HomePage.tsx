@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { ActionMenu } from '@/components/ActionMenu';
 import { useAuth } from '@/hooks/AuthContext';
 import {
   createTodo,
@@ -60,9 +61,17 @@ export function HomePage() {
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C4D2F] text-[#FAF8F2]">
               <CheckIcon className="h-4 w-4" />
             </span>
-            <span className="text-base font-semibold tracking-tight text-[#FAF8F2]">Todo</span>
+            <span className="text-base font-semibold tracking-tight text-[#FAF8F2]">Ambot Jan</span>
           </div>
           <div className="flex items-center gap-3">
+            <ActionMenu
+              title="My Action"
+              items={[
+                { label: 'My Action', onClick: () => console.log('Action 1') },
+                { label: 'My Activity', onClick: () => console.log('Action 2') },
+                { label: 'Oh My My', onClick: () => console.log('Action 3') },
+              ]}
+            />
             {user?.email && (
               <span
                 className="hidden text-sm text-[#C4956A] sm:inline"
