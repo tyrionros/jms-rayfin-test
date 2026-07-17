@@ -1,9 +1,11 @@
+import React from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { AuthPage } from '@/components/AuthPage';
 import { Sidebar } from '@/components/Sidebar';
 import { useAuth } from '@/hooks/AuthContext';
 import { HomePage } from '@/pages/HomePage';
+import { WebRTCStreamPage } from '@/pages/WebRTCStreamPage';
 
 function AuthGuard({
   children,
@@ -30,9 +32,14 @@ function AuthGuard({
 
 function App() {
   const { signOut } = useAuth();
+  const [currentPage, setCurrentPage] = React.useState('home');
 
   const handleLogout = () => {
     void signOut();
+  };
+
+  const handleNavigate = (pageId: string) => {
+    setCurrentPage(pageId);
   };
 
   return (
@@ -51,9 +58,10 @@ function App() {
           element={
             <AuthGuard requireAuth={true}>
               <div className="flex">
-                <Sidebar onLogout={handleLogout} />
+                <Sidebar onLogout={handleLogout} onNavigate={handleNavigate} />
                 <div className="flex-1 ml-20">
-                  <HomePage />
+                  {currentPage === 'home' && <HomePage />}
+                  {currentPage === 'stream' && <WebRTCStreamPage />}
                 </div>
               </div>
             </AuthGuard>
