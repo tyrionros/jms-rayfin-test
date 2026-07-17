@@ -1,0 +1,7 @@
+activeProfile: default
+profiles:
+  default:
+    semanticModels:
+      - alias: "hg62"
+        workspaceId: "0f49bb62-6832-40a7-825d-b730e9874a50"
+        itemId: "a93c08db-1991-4000-b4c2-bac5b51902a9"
