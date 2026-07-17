@@ -11,7 +11,7 @@ import {
   type TodoItem,
 } from '@/services/todos';
 
-export function HomePage() {
+export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void }) {
   const { user } = useAuth();
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [newTodoTitle, setNewTodoTitle] = useState('');
@@ -105,9 +105,9 @@ export function HomePage() {
             <ActionMenu
               title="My Action"
               items={[
-                { label: 'My Action', onClick: () => console.log('Action 1') },
-                { label: 'My Activity', onClick: () => console.log('Action 2') },
-                { label: 'Oh My My', onClick: () => console.log('Action 3') },
+                { label: 'My Action', onClick: () => onNavigate?.('myaction') },
+                { label: 'My Activity', onClick: () => console.log('Activity') },
+                { label: 'Oh My My', onClick: () => console.log('Oh My') },
               ]}
             />
             {user?.email && (

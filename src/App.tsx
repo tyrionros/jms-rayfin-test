@@ -6,6 +6,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { useAuth } from '@/hooks/AuthContext';
 import { HomePage } from '@/pages/HomePage';
 import { HemyXPage } from '@/pages/HemyXPage';
+import { MyActionPage } from '@/pages/MyActionPage';
 import { WebRTCStreamPage } from '@/pages/WebRTCStreamPage';
 
 function AuthGuard({
@@ -61,9 +62,10 @@ function App() {
               <div className="flex">
                 <Sidebar onLogout={handleLogout} onNavigate={handleNavigate} />
                 <div className="flex-1 ml-20">
-                  {currentPage === 'home' && <HomePage />}
+                  {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
                   {currentPage === 'stream' && <WebRTCStreamPage />}
                   {currentPage === 'hemyx' && <HemyXPage />}
+                  {currentPage === 'myaction' && <MyActionPage />}
                 </div>
               </div>
             </AuthGuard>
