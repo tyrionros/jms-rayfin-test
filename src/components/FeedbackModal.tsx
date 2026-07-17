@@ -1,16 +1,24 @@
 import { useState } from 'react';
+import { submitFeedback } from '@/services/feedback';
 
 interface FeedbackModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (feedback: { rating: number; message: string }) => void;
+  userEmail?: string;
+  currentPageName?: string;
 }
 
-export function FeedbackModal({ isOpen, onClose, onSubmit }: FeedbackModalProps) {
+export function FeedbackModal({
+  isOpen,
+  onClose,
+  userEmail = 'user@example.com',
+  currentPageName = 'App',
+}: FeedbackModalProps) {
   const [rating, setRating] = useState(0);
   const [message, setMessage] = useState('');
   const [hoveredStar, setHoveredStar] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleSubmit = async () => {
     if (rating === 0) {
@@ -18,11 +26,22 @@ export function FeedbackModal({ isOpen, onClose, onSubmit }: FeedbackModalProps)
       return;
     }
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
-      await onSubmit({ rating, message });
+      await submitFeedback({
+        userEmail,
+        rating,
+        subject: currentPageName,
+        message,
+      });
+      alert('Thank you for your feedback!');
       setRating(0);
       setMessage('');
       onClose();
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Failed to submit feedback';
+      setSubmitError(errorMsg);
+      console.error('Feedback submission error:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -92,6 +111,12 @@ export function FeedbackModal({ isOpen, onClose, onSubmit }: FeedbackModalProps)
             rows={4}
           />
         </div>
+
+        {submitError && (
+          <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
+            {submitError}
+          </div>
+        )}
 
         {/* ── Actions ── */}
         <div className="flex gap-3">

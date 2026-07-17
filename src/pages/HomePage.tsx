@@ -47,28 +47,6 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
     await fetchTodos();
   };
 
-  const handleFeedbackSubmit = async (feedback: { rating: number; message: string }) => {
-    console.log('Feedback submitted:', feedback);
-    try {
-      await fetch('https://api.example.com/feedback', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          rating: feedback.rating,
-          message: feedback.message,
-          user: user?.email,
-          timestamp: new Date().toISOString(),
-        }),
-      });
-      alert('Thank you for your feedback!');
-    } catch (error) {
-      console.error('Failed to submit feedback:', error);
-      alert('Failed to submit feedback. Please try again.');
-    }
-  };
-
   const pending = todos.filter((t) => !t.isCompleted);
   const completed = todos.filter((t) => t.isCompleted);
   const progress = todos.length
@@ -207,7 +185,8 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
       <FeedbackModal
         isOpen={isFeedbackOpen}
         onClose={() => setIsFeedbackOpen(false)}
-        onSubmit={handleFeedbackSubmit}
+        userEmail={user?.email}
+        currentPageName="Todo App - Home"
       />
     </div>
   );
