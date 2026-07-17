@@ -22,6 +22,7 @@
     "@microsoft/rayfin-auth-provider-fabric": "^1.33.2",
     "@microsoft/rayfin-client": "^1.33.2",
     "@microsoft/rayfin-core": "^1.33.2",
+    "@nvidia/omniverse-webrtc-streaming-library": "^5.18.2",
     "@tailwindcss/vite": "^4.1.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
