@@ -5,6 +5,7 @@ import { AuthPage } from '@/components/AuthPage';
 import { Sidebar } from '@/components/Sidebar';
 import { useAuth } from '@/hooks/AuthContext';
 import { HomePage } from '@/pages/HomePage';
+import { HemyXPage } from '@/pages/HemyXPage';
 import { WebRTCStreamPage } from '@/pages/WebRTCStreamPage';
 
 function AuthGuard({
@@ -62,6 +63,7 @@ function App() {
                 <div className="flex-1 ml-20">
                   {currentPage === 'home' && <HomePage />}
                   {currentPage === 'stream' && <WebRTCStreamPage />}
+                  {currentPage === 'hemyx' && <HemyXPage />}
                 </div>
               </div>
             </AuthGuard>

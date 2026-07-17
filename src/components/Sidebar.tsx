@@ -54,6 +54,11 @@ const icons = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14m0 0H3m12 0V4m0 10v6m0-6H3a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2v-6a2 2 0 00-2-2z" />
     </svg>
   ),
+  hemyx: (
+    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+    </svg>
+  ),
 };
 
 interface SidebarProps {
@@ -102,6 +107,11 @@ export function Sidebar({ onNavigate, onLogout }: SidebarProps) {
       name: 'Stream',
       icon: icons.stream,
       id: 'stream',
+    },
+    {
+      name: 'Hemy X',
+      icon: icons.hemyx,
+      id: 'hemyx',
     },
     {
       name: 'Settings',
