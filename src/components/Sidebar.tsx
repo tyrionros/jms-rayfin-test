@@ -220,14 +220,25 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
                 onMouseEnter={() => isMiddle && setHovered(index)}
                 onMouseLeave={() => isMiddle && setHovered(null)}
                 onClick={() => {
-                  if (hasSubmenu && expanded) {
-                    setExpandedSubmenu(isSubmenuOpen ? null : item.id);
-                  } else if (!hasSubmenu) {
-                    handleItemClick(index, item);
-                    setExpanded(false);
-                  } else if (hasSubmenu && !expanded) {
-                    setExpandedSubmenu(isSubmenuOpen ? null : item.id);
+                  // Menu toggle (first item)
+                  if (index === 0) {
+                    setExpanded(!expanded);
+                    return;
                   }
+
+                  // Submenu items - toggle if expanded, show popup if collapsed
+                  if (hasSubmenu) {
+                    if (expanded) {
+                      setExpandedSubmenu(isSubmenuOpen ? null : item.id);
+                    } else {
+                      setExpandedSubmenu(isSubmenuOpen ? null : item.id);
+                    }
+                    return;
+                  }
+
+                  // Regular menu items - navigate and collapse
+                  handleItemClick(index, item);
+                  setExpanded(false);
                 }}
               >
                 <div
