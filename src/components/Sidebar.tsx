@@ -156,7 +156,7 @@ export function Sidebar({ onNavigate, onLogout }: SidebarProps) {
         return (
           <div
             key={index}
-            className={`flex items-center justify-center gap-4 px-4 py-4 cursor-pointer transition-all duration-200 ${
+            className={`flex items-center ${expanded ? 'justify-start' : 'justify-center'} gap-4 px-4 py-4 cursor-pointer transition-all duration-200 ${
               isMiddle && isHovered ? 'bg-[#243B5E]' : ''
             } ${isActive && isMiddle ? 'bg-[#7C4D2F] border-l-4 border-[#9B6240]' : ''}`}
             onMouseEnter={() => isMiddle && setHovered(index)}
