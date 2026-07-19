@@ -136,6 +136,18 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
       name: 'Reports & Data',
       icon: icons.reports,
       id: 'reports',
+      submenu: [
+        {
+          name: 'Hemy Reports',
+          icon: icons.reports,
+          id: 'hemyreports',
+        },
+        {
+          name: 'Hemy Data',
+          icon: icons.livedata,
+          id: 'hemydata',
+        },
+      ],
     },
     {
       name: 'Hemy X',
@@ -226,12 +238,15 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
                     return;
                   }
 
-                  // Submenu items - toggle if expanded, show popup if collapsed
+                  // Submenu items
                   if (hasSubmenu) {
                     if (expanded) {
+                      // If expanded, toggle submenu inline
                       setExpandedSubmenu(isSubmenuOpen ? null : item.id);
                     } else {
-                      setExpandedSubmenu(isSubmenuOpen ? null : item.id);
+                      // If collapsed, expand sidebar and open submenu
+                      setExpanded(true);
+                      setExpandedSubmenu(item.id);
                     }
                     return;
                   }

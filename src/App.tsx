@@ -7,6 +7,8 @@ import { useAuth } from '@/hooks/AuthContext';
 import { HomePage } from '@/pages/HomePage';
 import { HemyXPage } from '@/pages/HemyXPage';
 import { HemyProjectsPage } from '@/pages/HemyProjectsPage';
+import { HemyReportsPage } from '@/pages/HemyReportsPage';
+import { HemyDataPage } from '@/pages/HemyDataPage';
 import { MyActionPage } from '@/pages/MyActionPage';
 import { WebRTCStreamPage } from '@/pages/WebRTCStreamPage';
 
@@ -67,6 +69,8 @@ function App() {
                   {currentPage === 'omniverse' && <WebRTCStreamPage />}
                   {currentPage === 'hemyx' && <HemyXPage />}
                   {currentPage === 'hemyprojects' && <HemyProjectsPage />}
+                  {currentPage === 'hemyreports' && <HemyReportsPage />}
+                  {currentPage === 'hemydata' && <HemyDataPage />}
                   {currentPage === 'myaction' && <MyActionPage />}
                 </div>
               </div>
