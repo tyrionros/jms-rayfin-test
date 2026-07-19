@@ -60,9 +60,11 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
         <div className="flex items-center justify-between px-8 py-4">
           <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C4D2F] text-[#FAF8F2]">
-              <CheckIcon className="h-4 w-4" />
+              <Hemy360Icon className="h-4 w-4" />
             </span>
-            <span className="text-base font-semibold tracking-tight text-[#FAF8F2]">Ambot Jan</span>
+            <span className="text-base font-semibold tracking-tight text-[#FAF8F2]" title="Hemy 360 - test by JMS">
+              Hemy 360
+            </span>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -284,6 +286,45 @@ function EmptyState() {
         Add your first task above to get started.
       </p>
     </div>
+  );
+}
+
+function Hemy360Icon({
+  className,
+}: {
+  className?: string;
+}) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      {/* Letter H */}
+      <text
+        x="12"
+        y="16"
+        fontSize="14"
+        fontWeight="bold"
+        textAnchor="middle"
+        fill="currentColor"
+        fontFamily="sans-serif"
+      >
+        H
+      </text>
+      {/* Circular arrow 360 degrees - arc with arrowhead */}
+      <path
+        d="M 12 3 A 9 9 0 0 1 21 12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      {/* Arrowhead */}
+      <path d="M 21 12 L 19.5 10.5 L 20.5 11.5" fill="currentColor" />
+    </svg>
   );
 }
 
