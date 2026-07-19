@@ -33,7 +33,7 @@ function AuthGuard({
 }
 
 function App() {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const [currentPage, setCurrentPage] = React.useState('home');
 
   const handleLogout = () => {
@@ -60,7 +60,7 @@ function App() {
           element={
             <AuthGuard requireAuth={true}>
               <div className="flex">
-                <Sidebar onLogout={handleLogout} onNavigate={handleNavigate} />
+                <Sidebar onLogout={handleLogout} onNavigate={handleNavigate} user={user} />
                 <div className="flex-1 ml-20">
                   {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
                   {currentPage === 'stream' && <WebRTCStreamPage />}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { type AuthUser } from '@/services/IAuthService';
 
 interface MenuItem {
   name: string;
@@ -64,12 +65,15 @@ const icons = {
 interface SidebarProps {
   onNavigate?: (itemId: string) => void;
   onLogout?: () => void;
+  user?: AuthUser | null;
 }
 
-export function Sidebar({ onNavigate, onLogout }: SidebarProps) {
+export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
   const [hovered, setHovered] = useState<number | null>(null);
   const [active, setActive] = useState(1);
   const [expanded, setExpanded] = useState(false);
+
+  const initial = (user?.name || user?.email || '?').charAt(0).toUpperCase();
 
   const menuItems: MenuItem[] = [
     {
@@ -195,6 +199,25 @@ export function Sidebar({ onNavigate, onLogout }: SidebarProps) {
           </div>
         );
       })}
+
+      {/* User profile at bottom */}
+      <div className="mt-auto border-t border-[#243B5E]">
+        <div className="flex items-center gap-3 px-4 py-4">
+          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#7C4D2F] text-xs font-semibold text-[#FAF8F2]">
+            {initial}
+          </span>
+          {expanded && (
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-[#FAF8F2]">
+                {user?.name || user?.email || 'User'}
+              </p>
+              {user?.email && (
+                <p className="truncate text-xs text-[#C4956A]">{user.email}</p>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

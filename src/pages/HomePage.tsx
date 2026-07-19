@@ -52,13 +52,12 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
   const progress = todos.length
     ? Math.round((completed.length / todos.length) * 100)
     : 0;
-  const initial = (user?.name || user?.email || '?').charAt(0).toUpperCase();
 
   return (
     <div className="min-h-screen bg-[#FAF8F2] text-[#1B2A4A]">
       {/* ── Header: deep navy bar, cream text ── */}
       <header className="sticky top-0 z-40 border-b border-[#DDD4C0] bg-[#1B2A4A] shadow-md">
-        <div className="flex items-center justify-between px-8 py-3.5">
+        <div className="flex items-center justify-between px-8 py-4">
           <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C4D2F] text-[#FAF8F2]">
               <CheckIcon className="h-4 w-4" />
@@ -88,20 +87,6 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
                 { label: 'Oh My My', onClick: () => console.log('Oh My') },
               ]}
             />
-            {user?.email && (
-              <span
-                className="hidden text-sm text-[#C4956A] sm:inline"
-                title={user.email}
-              >
-                {user.email}
-              </span>
-            )}
-            <span
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-[#7C4D2F] text-xs font-semibold text-[#FAF8F2]"
-              title={user?.email}
-            >
-              {initial}
-            </span>
           </div>
         </div>
       </header>
