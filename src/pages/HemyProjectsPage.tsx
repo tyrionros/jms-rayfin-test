@@ -4,9 +4,9 @@ export function HemyProjectsPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   return (
-    <div className="min-h-screen bg-[#FAF8F2] text-[#1B2A4A]">
+    <div className="min-h-screen bg-[#FAF8F2] text-[#021838]">
       {/* ── Header ── */}
-      <header className="sticky top-0 z-40 border-b border-[#DDD4C0] bg-[#1B2A4A] shadow-md">
+      <header className="sticky top-0 z-40 border-b border-[#DDD4C0] bg-[#021838] shadow-md">
         <div className="flex items-center justify-between px-8 py-4">
           <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C4D2F] text-[#FAF8F2]">

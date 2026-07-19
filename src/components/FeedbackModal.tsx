@@ -54,10 +54,10 @@ export function FeedbackModal({
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
         {/* ── Header ── */}
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-[#1B2A4A]">Share Your Feedback</h2>
+          <h2 className="text-xl font-bold text-[#021838]">Share Your Feedback</h2>
           <button
             onClick={onClose}
-            className="text-[#C4956A] transition-colors hover:text-[#1B2A4A]"
+            className="text-[#C4956A] transition-colors hover:text-[#021838]"
           >
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -72,7 +72,7 @@ export function FeedbackModal({
 
         {/* ── Star Rating ── */}
         <div className="mb-6">
-          <p className="mb-3 text-sm font-medium text-[#1B2A4A]">How would you rate us?</p>
+          <p className="mb-3 text-sm font-medium text-[#021838]">How would you rate us?</p>
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
@@ -100,14 +100,14 @@ export function FeedbackModal({
 
         {/* ── Message Input ── */}
         <div className="mb-6">
-          <label className="mb-2 block text-sm font-medium text-[#1B2A4A]">
+          <label className="mb-2 block text-sm font-medium text-[#021838]">
             Tell us more (optional)
           </label>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="What can we improve?"
-            className="w-full rounded-lg border border-[#DDD4C0] bg-[#FAF8F2] px-4 py-3 text-sm text-[#1B2A4A] placeholder-[#C4956A] transition-colors focus:border-[#1B2A4A] focus:outline-none focus:ring-2 focus:ring-[#1B2A4A]/20"
+            className="w-full rounded-lg border border-[#DDD4C0] bg-[#FAF8F2] px-4 py-3 text-sm text-[#021838] placeholder-[#C4956A] transition-colors focus:border-[#021838] focus:outline-none focus:ring-2 focus:ring-[#021838]/20"
             rows={4}
           />
         </div>
@@ -123,14 +123,14 @@ export function FeedbackModal({
           <button
             onClick={onClose}
             disabled={isSubmitting}
-            className="flex-1 rounded-lg border border-[#DDD4C0] bg-[#FAF8F2] px-4 py-2.5 text-sm font-semibold text-[#1B2A4A] transition-colors hover:bg-[#F0EAD8] disabled:opacity-50"
+            className="flex-1 rounded-lg border border-[#DDD4C0] bg-[#FAF8F2] px-4 py-2.5 text-sm font-semibold text-[#021838] transition-colors hover:bg-[#F0EAD8] disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="flex-1 rounded-lg bg-[#1B2A4A] px-4 py-2.5 text-sm font-semibold text-[#FAF8F2] transition-colors hover:bg-[#243B5E] disabled:opacity-50"
+            className="flex-1 rounded-lg bg-[#021838] px-4 py-2.5 text-sm font-semibold text-[#FAF8F2] transition-colors hover:bg-[#0D2E5C] disabled:opacity-50"
           >
             {isSubmitting ? 'Sending...' : 'Submit'}
           </button>

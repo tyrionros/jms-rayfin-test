@@ -188,7 +188,7 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
 
   return (
     <div
-      className={`fixed left-0 top-0 h-screen bg-[#1B2A4A] transition-all duration-300 ${
+      className={`fixed left-0 top-0 h-screen bg-[#021838] transition-all duration-300 ${
         expanded ? 'w-56' : 'w-20'
       } shadow-lg z-50 flex flex-col`}
     >
@@ -203,7 +203,7 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
             <div
               key={index}
               className={`flex items-center ${expanded ? 'justify-start' : 'justify-center'} gap-4 px-4 py-4 cursor-pointer transition-all duration-200 ${
-                isMiddle && isHovered ? 'bg-[#243B5E]' : ''
+                isMiddle && isHovered ? 'bg-[#0D2E5C]' : ''
               } ${isActive && isMiddle ? 'bg-[#7C4D2F] border-l-4 border-[#9B6240]' : ''}`}
               onMouseEnter={() => isMiddle && setHovered(index)}
               onMouseLeave={() => isMiddle && setHovered(null)}
@@ -244,7 +244,7 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
       </div>
 
       {/* User profile at bottom */}
-      <div className="border-t border-[#243B5E]">
+      <div className="border-t border-[#0D2E5C]">
         <div className={`flex items-center ${expanded ? 'justify-start' : 'justify-center'} gap-3 px-4 py-4`}>
           <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#7C4D2F] text-xs font-semibold text-[#FAF8F2]">
             {initial}

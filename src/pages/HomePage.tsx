@@ -54,9 +54,9 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
     : 0;
 
   return (
-    <div className="min-h-screen bg-[#FAF8F2] text-[#1B2A4A]">
+    <div className="min-h-screen bg-[#FAF8F2] text-[#021838]">
       {/* ── Header: deep navy bar, cream text ── */}
-      <header className="sticky top-0 z-40 border-b border-[#DDD4C0] bg-[#1B2A4A] shadow-md">
+      <header className="sticky top-0 z-40 border-b border-[#DDD4C0] bg-[#021838] shadow-md">
         <div className="flex items-center justify-between px-8 py-4">
           <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C4D2F] text-[#FAF8F2]">
@@ -67,7 +67,7 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsFeedbackOpen(true)}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-[#C4956A] transition-colors hover:bg-[#243B5E] hover:text-[#FAF8F2]"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-[#C4956A] transition-colors hover:bg-[#0D2E5C] hover:text-[#FAF8F2]"
               title="Send feedback"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +94,7 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
       <main className="mx-auto max-w-4xl px-8 py-10">
         {/* ── Page heading ── */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold tracking-tight text-[#1B2A4A]">Your tasks</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-[#021838]">Your tasks</h1>
           <p className="mt-1 text-sm text-[#7C4D2F]">
             {todos.length === 0
               ? 'Add your first task to get started.'
@@ -120,12 +120,12 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
             value={newTodoTitle}
             onChange={(e) => setNewTodoTitle(e.target.value)}
             placeholder="What needs to be done?"
-            className="flex-1 rounded-xl border border-[#DDD4C0] bg-white px-4 py-2.5 text-sm text-[#1B2A4A] placeholder-[#C4956A] shadow-sm transition-colors focus:border-[#1B2A4A] focus:outline-none focus:ring-2 focus:ring-[#1B2A4A]/20"
+            className="flex-1 rounded-xl border border-[#DDD4C0] bg-white px-4 py-2.5 text-sm text-[#021838] placeholder-[#C4956A] shadow-sm transition-colors focus:border-[#021838] focus:outline-none focus:ring-2 focus:ring-[#021838]/20"
           />
           <button
             type="submit"
             disabled={!newTodoTitle.trim()}
-            className="rounded-xl bg-[#1B2A4A] px-5 py-2.5 text-sm font-semibold text-[#FAF8F2] shadow-sm transition-colors hover:bg-[#243B5E] disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-xl bg-[#021838] px-5 py-2.5 text-sm font-semibold text-[#FAF8F2] shadow-sm transition-colors hover:bg-[#0D2E5C] disabled:cursor-not-allowed disabled:opacity-40"
           >
             Add
           </button>
@@ -231,7 +231,7 @@ function TodoRow({
       </button>
       <span
         className={`flex-1 text-sm ${
-          todo.isCompleted ? 'text-[#C4956A] line-through' : 'text-[#1B2A4A]'
+          todo.isCompleted ? 'text-[#C4956A] line-through' : 'text-[#021838]'
         }`}
       >
         {todo.title}
@@ -262,7 +262,7 @@ function TodoRow({
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#DDD4C0] bg-[#F0EAD8]/40 py-16 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#1B2A4A]/10 text-[#1B2A4A]">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#021838]/10 text-[#021838]">
         <svg
           className="h-6 w-6"
           fill="none"
@@ -277,7 +277,7 @@ function EmptyState() {
           />
         </svg>
       </div>
-      <p className="mt-4 text-sm font-medium text-[#1B2A4A]">
+      <p className="mt-4 text-sm font-medium text-[#021838]">
         Nothing here yet
       </p>
       <p className="mt-1 text-sm text-[#C4956A]">

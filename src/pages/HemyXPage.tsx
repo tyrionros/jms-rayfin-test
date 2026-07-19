@@ -17,9 +17,9 @@ export function HemyXPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F2] text-[#1B2A4A]">
+    <div className="min-h-screen bg-[#FAF8F2] text-[#021838]">
       {/* ── Header ── */}
-      <header className="sticky top-0 z-40 border-b border-[#DDD4C0] bg-[#1B2A4A] shadow-md">
+      <header className="sticky top-0 z-40 border-b border-[#DDD4C0] bg-[#021838] shadow-md">
         <div className="flex items-center justify-between px-8 py-4">
           <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C4D2F] text-[#FAF8F2]">
@@ -49,7 +49,7 @@ export function HemyXPage() {
           <div className="flex h-full items-center justify-center bg-[#FAF8F2]">
             <div className="text-center">
               <div className="mb-4 flex justify-center">
-                <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#DDD4C0] border-t-[#1B2A4A]" />
+                <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#DDD4C0] border-t-[#021838]" />
               </div>
               <p className="text-sm text-[#C4956A]">Loading Hemy X...</p>
             </div>
@@ -72,7 +72,7 @@ export function HemyXPage() {
                   d="M12 9v2m0 4v2m0 6a9 9 0 110-18 9 9 0 010 18zm0-13a1 1 0 100-2 1 1 0 000 2z"
                 />
               </svg>
-              <h3 className="mb-2 font-semibold text-[#1B2A4A]">Connection Error</h3>
+              <h3 className="mb-2 font-semibold text-[#021838]">Connection Error</h3>
               <p className="text-sm text-[#C4956A]">{error}</p>
             </div>
           </div>

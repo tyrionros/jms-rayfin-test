@@ -96,9 +96,9 @@ export function WebRTCStreamPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F2] text-[#1B2A4A]">
+    <div className="min-h-screen bg-[#FAF8F2] text-[#021838]">
       {/* ── Header ── */}
-      <header className="sticky top-0 z-40 border-b border-[#DDD4C0] bg-[#1B2A4A] shadow-md">
+      <header className="sticky top-0 z-40 border-b border-[#DDD4C0] bg-[#021838] shadow-md">
         <div className="flex items-center justify-between px-8 py-4">
           <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C4D2F] text-[#FAF8F2]">
@@ -124,11 +124,11 @@ export function WebRTCStreamPage() {
       <main className="mx-auto max-w-6xl px-8 py-10">
         {/* ── Connection Panel ── */}
         <div className="mb-8 rounded-2xl border border-[#DDD4C0] bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-bold text-[#1B2A4A]">Connection Settings</h2>
+          <h2 className="mb-4 text-lg font-bold text-[#021838]">Connection Settings</h2>
 
           <div className="mb-4 flex flex-col gap-4">
             <div>
-              <label className="mb-2 block text-sm font-medium text-[#1B2A4A]">
+              <label className="mb-2 block text-sm font-medium text-[#021838]">
                 Server URL
               </label>
               <input
@@ -137,7 +137,7 @@ export function WebRTCStreamPage() {
                 onChange={(e) => setServerUrl(e.target.value)}
                 disabled={isConnected}
                 placeholder="ws://localhost:8080"
-                className="w-full rounded-lg border border-[#DDD4C0] bg-[#FAF8F2] px-4 py-2.5 text-sm text-[#1B2A4A] placeholder-[#C4956A] transition-colors focus:border-[#1B2A4A] focus:outline-none focus:ring-2 focus:ring-[#1B2A4A]/20 disabled:opacity-50"
+                className="w-full rounded-lg border border-[#DDD4C0] bg-[#FAF8F2] px-4 py-2.5 text-sm text-[#021838] placeholder-[#C4956A] transition-colors focus:border-[#021838] focus:outline-none focus:ring-2 focus:ring-[#021838]/20 disabled:opacity-50"
               />
             </div>
 
@@ -151,14 +151,14 @@ export function WebRTCStreamPage() {
               <button
                 onClick={handleConnect}
                 disabled={isConnecting || isConnected}
-                className="rounded-lg bg-[#1B2A4A] px-6 py-2.5 text-sm font-semibold text-[#FAF8F2] transition-colors hover:bg-[#243B5E] disabled:opacity-50"
+                className="rounded-lg bg-[#021838] px-6 py-2.5 text-sm font-semibold text-[#FAF8F2] transition-colors hover:bg-[#0D2E5C] disabled:opacity-50"
               >
                 {isConnecting ? 'Connecting...' : isConnected ? 'Connected' : 'Connect'}
               </button>
               {isConnected && (
                 <button
                   onClick={handleDisconnect}
-                  className="rounded-lg border border-[#DDD4C0] bg-[#FAF8F2] px-6 py-2.5 text-sm font-semibold text-[#1B2A4A] transition-colors hover:bg-[#F0EAD8]"
+                  className="rounded-lg border border-[#DDD4C0] bg-[#FAF8F2] px-6 py-2.5 text-sm font-semibold text-[#021838] transition-colors hover:bg-[#F0EAD8]"
                 >
                   Disconnect
                 </button>
@@ -202,11 +202,11 @@ export function WebRTCStreamPage() {
 
         {/* ── Info Panel ── */}
         <div className="mt-8 rounded-2xl border border-[#DDD4C0] bg-white p-6 shadow-sm">
-          <h3 className="mb-3 text-sm font-semibold text-[#1B2A4A]">Connection Info</h3>
+          <h3 className="mb-3 text-sm font-semibold text-[#021838]">Connection Info</h3>
           <dl className="grid grid-cols-2 gap-4">
             <div>
               <dt className="text-xs font-medium text-[#C4956A]">Status</dt>
-              <dd className="mt-1 text-sm font-semibold text-[#1B2A4A]">
+              <dd className="mt-1 text-sm font-semibold text-[#021838]">
                 {isConnected ? (
                   <span className="flex items-center gap-2">
                     <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
@@ -222,7 +222,7 @@ export function WebRTCStreamPage() {
             </div>
             <div>
               <dt className="text-xs font-medium text-[#C4956A]">Server</dt>
-              <dd className="mt-1 text-sm font-mono text-[#1B2A4A]">{serverUrl}</dd>
+              <dd className="mt-1 text-sm font-mono text-[#021838]">{serverUrl}</dd>
             </div>
           </dl>
         </div>

@@ -34,7 +34,7 @@ export function ActionMenu({ title, items }: ActionMenuProps) {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-[#C4956A] transition-colors hover:bg-[#243B5E] hover:text-[#FAF8F2]"
+        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-[#C4956A] transition-colors hover:bg-[#0D2E5C] hover:text-[#FAF8F2]"
       >
         {title}
         <svg
@@ -58,7 +58,7 @@ export function ActionMenu({ title, items }: ActionMenuProps) {
             <button
               key={index}
               onClick={() => handleItemClick(item.onClick)}
-              className={`block w-full px-4 py-2 text-left text-sm text-[#1B2A4A] transition-colors hover:bg-[#F0EAD8] ${
+              className={`block w-full px-4 py-2 text-left text-sm text-[#021838] transition-colors hover:bg-[#F0EAD8] ${
                 index === items.length - 1 ? '' : 'border-b border-[#DDD4C0]'
               }`}
             >
