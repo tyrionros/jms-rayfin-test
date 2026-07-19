@@ -111,7 +111,7 @@ export function WebRTCStreamPage() {
                 />
               </svg>
             </span>
-            <span className="text-base font-semibold tracking-tight text-[#FAF8F2]">Omniverse Web Viewer</span>
+            <span className="text-base font-semibold tracking-tight text-[#FAF8F2]">Nvidia Omniverse Web Viewer</span>
           </div>
           <span
             className={`flex h-3 w-3 animate-pulse rounded-full ${

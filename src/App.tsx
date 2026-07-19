@@ -64,7 +64,7 @@ function App() {
                 <Sidebar onLogout={handleLogout} onNavigate={handleNavigate} user={user} />
                 <div className="flex-1 ml-20">
                   {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
-                  {currentPage === 'stream' && <WebRTCStreamPage />}
+                  {currentPage === 'omniverse' && <WebRTCStreamPage />}
                   {currentPage === 'hemyx' && <HemyXPage />}
                   {currentPage === 'hemyprojects' && <HemyProjectsPage />}
                   {currentPage === 'myaction' && <MyActionPage />}

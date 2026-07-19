@@ -7,6 +7,7 @@ interface MenuItem {
   id: string;
   isSpecial?: boolean;
   color?: string;
+  submenu?: MenuItem[];
 }
 
 const icons = {
@@ -75,6 +76,12 @@ const icons = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14m0 0H3m12 0V4m0 10v6m0-6H3a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2v-6a2 2 0 00-2-2z" />
     </svg>
   ),
+  nvidia: (
+    <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+      {/* Nvidia stylized N logo */}
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15h-2V9h2v8zm4-8h2v8h-2v-8zm4 4h-2v4h-2v-4h-2v-2h6v6z" />
+    </svg>
+  ),
   hemyx: (
     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -92,6 +99,7 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
   const [hovered, setHovered] = useState<number | null>(null);
   const [active, setActive] = useState(1);
   const [expanded, setExpanded] = useState(false);
+  const [expandedSubmenu, setExpandedSubmenu] = useState<string | null>(null);
 
   const initial = (user?.name || user?.email || '?').charAt(0).toUpperCase();
 
@@ -111,6 +119,13 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
       name: 'Digital Twin',
       icon: icons.digitaltwin,
       id: 'digitaltwin',
+      submenu: [
+        {
+          name: 'Omniverse',
+          icon: icons.nvidia,
+          id: 'omniverse',
+        },
+      ],
     },
     {
       name: 'Hemy Live Data & BMS',
@@ -158,11 +173,6 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
       id: 'hemyconnect',
     },
     {
-      name: 'Stream',
-      icon: icons.stream,
-      id: 'stream',
-    },
-    {
       name: 'Log Out',
       icon: icons.logout,
       id: 'logout',
@@ -198,34 +208,27 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
           const isMiddle = index !== 0 && index !== menuItems.length - 1;
           const isHovered = hovered === index;
           const isActive = active === index;
+          const hasSubmenu = item.submenu && item.submenu.length > 0;
+          const isSubmenuOpen = expandedSubmenu === item.id;
 
           return (
-            <div
-              key={index}
-              className={`flex items-center ${expanded ? 'justify-start' : 'justify-center'} gap-4 px-4 py-4 cursor-pointer transition-all duration-200 ${
-                isMiddle && isHovered ? 'bg-[#0D2E5C]' : ''
-              } ${isActive && isMiddle ? 'bg-[#7C4D2F] border-l-4 border-[#9B6240]' : ''}`}
-              onMouseEnter={() => isMiddle && setHovered(index)}
-              onMouseLeave={() => isMiddle && setHovered(null)}
-              onClick={() => handleItemClick(index, item)}
-            >
+            <div key={index}>
               <div
-                className={`flex-shrink-0 transition-colors ${
-                  isActive && isMiddle
-                    ? 'text-[#FAF8F2]'
-                    : isHovered && isMiddle
-                      ? 'text-[#FAF8F2]'
-                      : item.color === 'red'
-                        ? 'text-red-400'
-                        : 'text-[#C4956A]'
-                }`}
+                className={`flex items-center ${expanded ? 'justify-start' : 'justify-center'} gap-4 px-4 py-4 cursor-pointer transition-all duration-200 ${
+                  isMiddle && isHovered ? 'bg-[#0D2E5C]' : ''
+                } ${isActive && isMiddle ? 'bg-[#7C4D2F] border-l-4 border-[#9B6240]' : ''}`}
+                onMouseEnter={() => isMiddle && setHovered(index)}
+                onMouseLeave={() => isMiddle && setHovered(null)}
+                onClick={() => {
+                  if (hasSubmenu && expanded) {
+                    setExpandedSubmenu(isSubmenuOpen ? null : item.id);
+                  } else {
+                    handleItemClick(index, item);
+                  }
+                }}
               >
-                {item.icon}
-              </div>
-
-              {expanded && (
-                <span
-                  className={`whitespace-nowrap text-sm font-medium transition-colors ${
+                <div
+                  className={`flex-shrink-0 transition-colors ${
                     isActive && isMiddle
                       ? 'text-[#FAF8F2]'
                       : isHovered && isMiddle
@@ -235,8 +238,60 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
                           : 'text-[#C4956A]'
                   }`}
                 >
-                  {item.name}
-                </span>
+                  {item.icon}
+                </div>
+
+                {expanded && (
+                  <div className="flex flex-1 items-center justify-between">
+                    <span
+                      className={`whitespace-nowrap text-sm font-medium transition-colors ${
+                        isActive && isMiddle
+                          ? 'text-[#FAF8F2]'
+                          : isHovered && isMiddle
+                            ? 'text-[#FAF8F2]'
+                            : item.color === 'red'
+                              ? 'text-red-400'
+                              : 'text-[#C4956A]'
+                      }`}
+                    >
+                      {item.name}
+                    </span>
+                    {hasSubmenu && (
+                      <svg
+                        className={`h-4 w-4 transition-transform ${isSubmenuOpen ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Submenu items */}
+              {hasSubmenu && isSubmenuOpen && expanded && (
+                <div className="bg-[#0D2E5C]/50">
+                  {item.submenu!.map((subitem, subindex) => (
+                    <div
+                      key={subindex}
+                      className="flex items-center gap-4 px-8 py-3 cursor-pointer transition-all duration-200 hover:bg-[#0D2E5C] text-[#C4956A] hover:text-[#FAF8F2]"
+                      onClick={() => {
+                        setActive(index);
+                        onNavigate?.(subitem.id);
+                      }}
+                    >
+                      <div className="flex-shrink-0">{subitem.icon}</div>
+                      <span className="text-sm font-medium">{subitem.name}</span>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           );
