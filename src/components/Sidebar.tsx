@@ -212,7 +212,7 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
           const isSubmenuOpen = expandedSubmenu === item.id;
 
           return (
-            <div key={index}>
+            <div key={index} className="relative">
               <div
                 className={`flex items-center ${expanded ? 'justify-start' : 'justify-center'} gap-4 px-4 py-4 cursor-pointer transition-all duration-200 ${
                   isMiddle && isHovered ? 'bg-[#0D2E5C]' : ''
@@ -222,8 +222,11 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
                 onClick={() => {
                   if (hasSubmenu && expanded) {
                     setExpandedSubmenu(isSubmenuOpen ? null : item.id);
-                  } else {
+                  } else if (!hasSubmenu) {
                     handleItemClick(index, item);
+                    setExpanded(false);
+                  } else if (hasSubmenu && !expanded) {
+                    setExpandedSubmenu(isSubmenuOpen ? null : item.id);
                   }
                 }}
               >
@@ -258,7 +261,15 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
                     </span>
                     {hasSubmenu && (
                       <svg
-                        className={`h-4 w-4 transition-transform ${isSubmenuOpen ? 'rotate-180' : ''}`}
+                        className={`h-4 w-4 transition-transform ${
+                          isSubmenuOpen ? 'rotate-180' : ''
+                        } ${
+                          isActive && isMiddle
+                            ? 'text-[#FAF8F2]'
+                            : isHovered && isMiddle
+                              ? 'text-[#FAF8F2]'
+                              : 'text-[#C4956A]'
+                        }`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -275,23 +286,50 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
                 )}
               </div>
 
-              {/* Submenu items */}
-              {hasSubmenu && isSubmenuOpen && expanded && (
-                <div className="bg-[#0D2E5C]/50">
-                  {item.submenu!.map((subitem, subindex) => (
-                    <div
-                      key={subindex}
-                      className="flex items-center gap-4 px-8 py-3 cursor-pointer transition-all duration-200 hover:bg-[#0D2E5C] text-[#C4956A] hover:text-[#FAF8F2]"
-                      onClick={() => {
-                        setActive(index);
-                        onNavigate?.(subitem.id);
-                      }}
-                    >
-                      <div className="flex-shrink-0">{subitem.icon}</div>
-                      <span className="text-sm font-medium">{subitem.name}</span>
+              {/* Submenu items - visible when expanded or when collapsed with hover */}
+              {hasSubmenu && isSubmenuOpen && (
+                <>
+                  {/* Expanded view - inline submenu */}
+                  {expanded && (
+                    <div className="bg-[#0D2E5C]/50">
+                      {item.submenu!.map((subitem, subindex) => (
+                        <div
+                          key={subindex}
+                          className="flex items-center gap-4 px-8 py-3 cursor-pointer transition-all duration-200 hover:bg-[#0D2E5C] text-[#C4956A] hover:text-[#FAF8F2]"
+                          onClick={() => {
+                            setActive(index);
+                            onNavigate?.(subitem.id);
+                            setExpandedSubmenu(null);
+                            setExpanded(false);
+                          }}
+                        >
+                          <div className="flex-shrink-0">{subitem.icon}</div>
+                          <span className="text-sm font-medium">{subitem.name}</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  )}
+
+                  {/* Collapsed view - popup submenu */}
+                  {!expanded && (
+                    <div className="absolute left-20 top-0 z-40 w-48 rounded-lg bg-[#021838] shadow-lg border border-[#0D2E5C]">
+                      {item.submenu!.map((subitem, subindex) => (
+                        <div
+                          key={subindex}
+                          className="flex items-center gap-4 px-4 py-3 cursor-pointer transition-all duration-200 hover:bg-[#0D2E5C] text-[#C4956A] hover:text-[#FAF8F2] first:rounded-t-lg last:rounded-b-lg"
+                          onClick={() => {
+                            setActive(index);
+                            onNavigate?.(subitem.id);
+                            setExpandedSubmenu(null);
+                          }}
+                        >
+                          <div className="flex-shrink-0">{subitem.icon}</div>
+                          <span className="text-sm font-medium">{subitem.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           );
