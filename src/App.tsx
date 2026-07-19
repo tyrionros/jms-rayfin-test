@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { AuthPage } from '@/components/AuthPage';
+import { FloatingFeedbackButton } from '@/components/FloatingFeedbackButton';
 import { Sidebar } from '@/components/Sidebar';
 import { useAuth } from '@/hooks/AuthContext';
 import { HomePage } from '@/pages/HomePage';
@@ -74,6 +75,7 @@ function App() {
                   {currentPage === 'myaction' && <MyActionPage />}
                 </div>
               </div>
+              <FloatingFeedbackButton user={user} currentPageName="Hemy 360 - test by JMS" />
             </AuthGuard>
           }
         />

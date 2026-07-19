@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { ActionMenu } from '@/components/ActionMenu';
-import { FeedbackModal } from '@/components/FeedbackModal';
-import { useAuth } from '@/hooks/AuthContext';
 import {
   createTodo,
   deleteTodo,
@@ -12,11 +10,9 @@ import {
 } from '@/services/todos';
 
 export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void }) {
-  const { user } = useAuth();
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [loading, setLoading] = useState(true);
-  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   const fetchTodos = useCallback(async () => {
     const data = await getTodos();
@@ -67,20 +63,6 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setIsFeedbackOpen(true)}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-[#C4956A] transition-colors hover:bg-[#0D2E5C] hover:text-[#FAF8F2]"
-              title="Send feedback"
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-                />
-              </svg>
-            </button>
             <ActionMenu
               title="My Action"
               items={[
@@ -168,13 +150,6 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
           </div>
         )}
       </main>
-
-      <FeedbackModal
-        isOpen={isFeedbackOpen}
-        onClose={() => setIsFeedbackOpen(false)}
-        userEmail={user?.email}
-        currentPageName="Hemy 360 - test by JMS"
-      />
     </div>
   );
 }
