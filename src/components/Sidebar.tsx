@@ -123,6 +123,11 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
       id: 'reports',
     },
     {
+      name: 'Hemy X',
+      icon: icons.hemyx,
+      id: 'hemyx',
+    },
+    {
       name: 'Hemy Projects',
       icon: icons.projects,
       id: 'hemyprojects',
@@ -158,11 +163,6 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
       id: 'stream',
     },
     {
-      name: 'Hemy X',
-      icon: icons.hemyx,
-      id: 'hemyx',
-    },
-    {
       name: 'Log Out',
       icon: icons.logout,
       id: 'logout',
@@ -192,38 +192,25 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
         expanded ? 'w-56' : 'w-20'
       } shadow-lg z-50 flex flex-col`}
     >
-      {menuItems.map((item, index) => {
-        const isMiddle = index !== 0 && index !== menuItems.length - 1;
-        const isHovered = hovered === index;
-        const isActive = active === index;
+      {/* Scrollable menu items */}
+      <div className="flex-1 overflow-y-auto">
+        {menuItems.map((item, index) => {
+          const isMiddle = index !== 0 && index !== menuItems.length - 1;
+          const isHovered = hovered === index;
+          const isActive = active === index;
 
-        return (
-          <div
-            key={index}
-            className={`flex items-center ${expanded ? 'justify-start' : 'justify-center'} gap-4 px-4 py-4 cursor-pointer transition-all duration-200 ${
-              isMiddle && isHovered ? 'bg-[#243B5E]' : ''
-            } ${isActive && isMiddle ? 'bg-[#7C4D2F] border-l-4 border-[#9B6240]' : ''}`}
-            onMouseEnter={() => isMiddle && setHovered(index)}
-            onMouseLeave={() => isMiddle && setHovered(null)}
-            onClick={() => handleItemClick(index, item)}
-          >
+          return (
             <div
-              className={`flex-shrink-0 transition-colors ${
-                isActive && isMiddle
-                  ? 'text-[#FAF8F2]'
-                  : isHovered && isMiddle
-                    ? 'text-[#FAF8F2]'
-                    : item.color === 'red'
-                      ? 'text-red-400'
-                      : 'text-[#C4956A]'
-              }`}
+              key={index}
+              className={`flex items-center ${expanded ? 'justify-start' : 'justify-center'} gap-4 px-4 py-4 cursor-pointer transition-all duration-200 ${
+                isMiddle && isHovered ? 'bg-[#243B5E]' : ''
+              } ${isActive && isMiddle ? 'bg-[#7C4D2F] border-l-4 border-[#9B6240]' : ''}`}
+              onMouseEnter={() => isMiddle && setHovered(index)}
+              onMouseLeave={() => isMiddle && setHovered(null)}
+              onClick={() => handleItemClick(index, item)}
             >
-              {item.icon}
-            </div>
-
-            {expanded && (
-              <span
-                className={`whitespace-nowrap text-sm font-medium transition-colors ${
+              <div
+                className={`flex-shrink-0 transition-colors ${
                   isActive && isMiddle
                     ? 'text-[#FAF8F2]'
                     : isHovered && isMiddle
@@ -233,15 +220,31 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
                         : 'text-[#C4956A]'
                 }`}
               >
-                {item.name}
-              </span>
-            )}
-          </div>
-        );
-      })}
+                {item.icon}
+              </div>
+
+              {expanded && (
+                <span
+                  className={`whitespace-nowrap text-sm font-medium transition-colors ${
+                    isActive && isMiddle
+                      ? 'text-[#FAF8F2]'
+                      : isHovered && isMiddle
+                        ? 'text-[#FAF8F2]'
+                        : item.color === 'red'
+                          ? 'text-red-400'
+                          : 'text-[#C4956A]'
+                  }`}
+                >
+                  {item.name}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
 
       {/* User profile at bottom */}
-      <div className="mt-auto border-t border-[#243B5E]">
+      <div className="border-t border-[#243B5E]">
         <div className={`flex items-center ${expanded ? 'justify-start' : 'justify-center'} gap-3 px-4 py-4`}>
           <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#7C4D2F] text-xs font-semibold text-[#FAF8F2]">
             {initial}
