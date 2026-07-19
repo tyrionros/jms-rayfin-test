@@ -202,7 +202,7 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
 
       {/* User profile at bottom */}
       <div className="mt-auto border-t border-[#243B5E]">
-        <div className="flex items-center gap-3 px-4 py-4">
+        <div className={`flex items-center ${expanded ? 'justify-start' : 'justify-center'} gap-3 px-4 py-4`}>
           <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#7C4D2F] text-xs font-semibold text-[#FAF8F2]">
             {initial}
           </span>
