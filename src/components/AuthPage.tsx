@@ -61,7 +61,7 @@ export function AuthPage() {
             </svg>
           </span>
           <h1 className="text-2xl font-bold tracking-tight text-[#1B2A4A]">
-            Todo App
+            Hemy 360 - test by JMS
           </h1>
           <p className="mt-1.5 text-sm text-[#7C4D2F]">
             Sign in to manage your tasks.

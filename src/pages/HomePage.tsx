@@ -186,7 +186,7 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
         isOpen={isFeedbackOpen}
         onClose={() => setIsFeedbackOpen(false)}
         userEmail={user?.email}
-        currentPageName="Todo App - Home"
+        currentPageName="Hemy 360 - test by JMS"
       />
     </div>
   );

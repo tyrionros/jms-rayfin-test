@@ -5,7 +5,7 @@
   "type": "module",
   "template": {
     "name": "fabricator-todoapp",
-    "displayName": "Todo App",
+    "displayName": "Hemy 360 - test by JMS",
     "description": "A polished Fabric-authenticated todo app — per-user row-level security on a Rayfin data model, ready to deploy to Fabric"
   },
   "scripts": {
