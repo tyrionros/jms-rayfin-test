@@ -38,44 +38,48 @@ export function HemyLiveDataPage() {
         // Token acquisition function - acquires real Azure AD token for Fabric API
         const acquireToken = async (scopes?: string[]): Promise<string> => {
           try {
-            // Try to get MSAL instance that Rayfin uses
-            await import('@azure/msal-browser');
+            const { getRayfinClient } = await import('@/services/rayfinClient');
+            const rayfinClient = getRayfinClient();
             
-            // Check if MSAL instance exists in window (Rayfin may set it up)
-            const msalInstance = (window as any).msalInstance || (window as any).msal;
-            
-            if (!msalInstance) {
-              throw new Error('MSAL instance not available');
-            }
-
-            // Default scopes for Fabric API if not provided
-            const tokenScopes = scopes || ['https://api.fabric.microsoft.com/.default'];
-
-            // Attempt to get token silently (from cache or refresh token)
-            const result = await msalInstance.acquireTokenSilent({
-              scopes: tokenScopes,
-            });
-
-            return result.accessToken;
-          } catch (err) {
-            console.error('Token acquisition error:', err);
-            
-            // Fallback: try to get from Rayfin session if available
+            // Try to get access token from Rayfin's internal auth client
+            // The Rayfin client has access to the token through its auth provider
             try {
-              const { getRayfinClient } = await import('@/services/rayfinClient');
-              const rayfinClient = getRayfinClient();
-              const session = rayfinClient.auth.getSession();
+              // Attempt to access the underlying MSAL instance if available
+              const authClient = (rayfinClient.auth as any)._client || (rayfinClient.auth as any).client;
               
-              // Rayfin may have exposed the token somehow
-              if ((session as any).accessToken) {
-                return (session as any).accessToken;
+              if (authClient?.acquireTokenSilent) {
+                const tokenScopes = scopes || ['https://api.fabric.microsoft.com/.default'];
+                const result = await authClient.acquireTokenSilent({
+                  scopes: tokenScopes,
+                });
+                return result.accessToken;
               }
-            } catch (fallbackErr) {
-              console.warn('Rayfin token fallback failed:', fallbackErr);
+            } catch (internalErr) {
+              console.warn('Could not access internal Rayfin auth client:', internalErr);
             }
-
+            
+            // Fallback: Check if token is in session or window
+            const session = rayfinClient.auth.getSession();
+            if ((session as any).accessToken) {
+              return (session as any).accessToken;
+            }
+            
+            // Last resort: Check window for MSAL instance
+            const msalInstance = (window as any).msalInstance || (window as any).msal;
+            if (msalInstance?.acquireTokenSilent) {
+              const tokenScopes = scopes || ['https://api.fabric.microsoft.com/.default'];
+              const result = await msalInstance.acquireTokenSilent({
+                scopes: tokenScopes,
+              });
+              return result.accessToken;
+            }
+            
+            throw new Error('Unable to acquire token from Rayfin auth, MSAL instance, or session');
+          } catch (err) {
+            console.error('Token acquisition failed:', err);
             throw new Error(
-              'Failed to acquire access token. Ensure you are logged in and have permission to access the Fabric workspace.'
+              `Failed to acquire access token: ${err instanceof Error ? err.message : String(err)}. ` +
+              'Ensure your Rayfin app is properly authenticated and has permission to access Fabric APIs.'
             );
           }
         };
