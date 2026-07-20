@@ -36,7 +36,7 @@ export function AuthPage() {
         //await msalInstance.loginPopup(loginRequest);
         await msalInstance.initialize();
         await msalInstance.handleRedirectPromise();
-        msalInstance.acquireTokenSilent(loginRequest);
+        await msalInstance.acquireTokenSilent(loginRequest);
         console.log('[AuthPage] MSAL login successful');
       } catch (msalErr) {
         console.warn('[AuthPage] MSAL login failed, continuing with Rayfin auth:', msalErr);

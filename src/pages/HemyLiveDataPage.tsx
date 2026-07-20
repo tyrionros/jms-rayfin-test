@@ -33,7 +33,7 @@ export function HemyLiveDataPage({ onNavigate }: { onNavigate?: (pageId: string)
       await msalInstance.loginRedirect({
        // scopes: ['https://api.fabric.microsoft.com/.default'],
         scopes: ['https://analysis.windows.net/powerbi/api/Report.Read.All'],
-        loginHint: String(msalInstance.getAllAccounts()[0]) || user?.email
+        loginHint: msalInstance.getAllAccounts()[0]?.username || undefined
       });
     } catch (err) {
       console.error('[HemyLiveDataPage] Redirect login failed:', err);
@@ -101,12 +101,16 @@ export function HemyLiveDataPage({ onNavigate }: { onNavigate?: (pageId: string)
             console.warn('[HemyLiveDataPage] Silent token failed. Falling back to redirect token acquisition.', silentErr);
             // Fall back to redirect if token is entirely expired or missing
             await msalInstance.acquireTokenRedirect(tokenRequest);
-            return ''; 
+            throw new Error('Token acquisition requires redirect authentication. Page will refresh.');
           }
         };
 
         let initialToken = await acquireToken();
-        if (!initialToken) return; // Flow handles page redirect transition
+        if (!initialToken) {
+          setError('Failed to acquire authentication token. Please try again.');
+          setIsLoading(false);
+          return;
+        }
 
         const config: KQLDashboardEmbedConfiguration = {
           itemType: 'KQLDashboard',
