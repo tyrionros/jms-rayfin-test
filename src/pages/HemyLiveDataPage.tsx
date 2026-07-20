@@ -31,8 +31,7 @@ export function HemyLiveDataPage({ onNavigate }: { onNavigate?: (pageId: string)
       
       // Using redirect instead of popup to support iframe environments cleanly
       await msalInstance.loginRedirect({
-       // scopes: ['https://api.fabric.microsoft.com/.default'],
-        scopes: ['https://analysis.windows.net/powerbi/api/Report.Read.All'],
+        scopes: ['https://api.fabric.microsoft.com/.default'],
         loginHint: msalInstance.getAllAccounts()[0]?.username || undefined
       });
     } catch (err) {
