@@ -1,5 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 
+import { useAuth } from '@/hooks/AuthContext';
+import { getRayfinClient } from '@/services/rayfinClient';
+
 declare global {
   interface Window {
     fabric?: {
@@ -10,16 +13,11 @@ declare global {
   }
 }
 
-interface HemyLiveDataPageProps {
-  // Pass this in from the global auth state or MSAL provider context
-  userAuthToken?: string; 
-}
-
-export function HemyLiveDataPage({ userAuthToken }: HemyLiveDataPageProps) {
+export function HemyLiveDataPage() {
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // React ref for clean container targeting
   const containerRef = useRef<HTMLDivElement>(null); 
   const embedInstanceRef = useRef<any>(null);
 
@@ -31,29 +29,39 @@ export function HemyLiveDataPage({ userAuthToken }: HemyLiveDataPageProps) {
       try {
         setIsLoading(true);
 
-        // A secure token is required before executing the embed script
-        if (!userAuthToken) {
-          setError('Authentication token is required to initialize the Fabric dashboard.');
-          setIsLoading(false);
-          return;
+        // Get access token from Rayfin auth client if available
+        // (Fabric SDK can also auto-acquire tokens during embed)
+        let accessToken: string | null = null;
+        try {
+          const rayfinClient = getRayfinClient();
+          const session = rayfinClient.auth.getSession();
+          // Try to extract token from session if available
+          if (session && (session as any).accessToken) {
+            accessToken = (session as any).accessToken;
+          }
+        } catch (tokenErr) {
+          console.warn('Could not retrieve access token, letting Fabric SDK auto-acquire:', tokenErr);
         }
 
         const renderDashboard = () => {
           if (window.fabric?.embeds?.embedKQLDashboard && containerRef.current) {
-            // Clear out old instances before drawing a new one
             containerRef.current.innerHTML = ''; 
 
-            // Corrected native Fabric object schema
-            embedInstanceRef.current = window.fabric.embeds.embedKQLDashboard(containerRef.current, {
+            const config: any = {
               type: 'KQLDashboard',
-              id: dashboardId,          // Correct field key
-              workspaceId: workspaceId, // Correct field key
-              accessToken: userAuthToken,
+              id: dashboardId,
+              workspaceId: workspaceId,
               settings: {
                 pageView: 'fitToWidth'
               }
-            });
+            };
 
+            // Add access token if available
+            if (accessToken) {
+              config.accessToken = accessToken;
+            }
+
+            embedInstanceRef.current = window.fabric.embeds.embedKQLDashboard(containerRef.current, config);
             setIsLoading(false);
           } else {
             setError('Fabric Embed SDK layout is missing the embedKQLDashboard engine.');
@@ -74,7 +82,6 @@ export function HemyLiveDataPage({ userAuthToken }: HemyLiveDataPageProps) {
         script.crossOrigin = 'anonymous';
 
         script.onload = () => {
-          // Give the window frame an instantiation buffer window
           setTimeout(() => {
             renderDashboard();
           }, 200);
@@ -93,15 +100,19 @@ export function HemyLiveDataPage({ userAuthToken }: HemyLiveDataPageProps) {
       }
     };
 
-    loadFabricEmbed();
+    if (user) {
+      loadFabricEmbed();
+    } else {
+      setError('User must be authenticated to view this dashboard.');
+      setIsLoading(false);
+    }
 
-    // Clean up connections when navigating away from the page
     return () => {
       if (embedInstanceRef.current && typeof embedInstanceRef.current.clean === 'function') {
         embedInstanceRef.current.clean();
       }
     };
-  }, [userAuthToken]);
+  }, [user]);
 
   return (
     <div className="flex flex-col h-screen bg-[#FAF8F2]">
