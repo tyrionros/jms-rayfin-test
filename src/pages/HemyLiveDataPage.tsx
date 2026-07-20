@@ -36,10 +36,10 @@ export function HemyLiveDataPage() {
         });
         embedManagerRef.current = embedManager;
 
-        // Acquire initial token using MSAL
+        // Acquire initial token using MSAL (pass user email to help find account)
         let initialToken: string;
         try {
-          initialToken = await acquireFabricToken();
+          initialToken = await acquireFabricToken(user?.email);
         } catch (tokenErr) {
           setError(`Authentication Error: ${tokenErr instanceof Error ? tokenErr.message : 'Failed to acquire token'}`);
           setIsLoading(false);
@@ -55,7 +55,7 @@ export function HemyLiveDataPage() {
             accessTokenProvider: {
               callback: async ({ scopes }) => {
                 try {
-                  const token = await acquireFabricToken(scopes);
+                  const token = await acquireFabricToken(user?.email, scopes);
                   return { token };
                 } catch (err) {
                   console.error('Token provider error:', err);
