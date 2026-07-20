@@ -1,8 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import { MsalProvider } from '@azure/msal-react';
 
-import { msalInstance } from '@/services/msalConfig';
+import { MsalAuthWrapper } from '@/components/MsalAuthWrapper';
 import { AuthPage } from '@/components/AuthPage';
 import { FloatingFeedbackButton } from '@/components/FloatingFeedbackButton';
 import { Sidebar } from '@/components/Sidebar';
@@ -52,21 +51,21 @@ function App() {
   };
 
   return (
-    <MsalProvider instance={msalInstance}>
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/auth"
-            element={
-              <AuthGuard requireAuth={false}>
-                <AuthPage />
-              </AuthGuard>
-            }
-          />
-          <Route
-            path="/"
-            element={
-              <AuthGuard requireAuth={true}>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/auth"
+          element={
+            <AuthGuard requireAuth={false}>
+              <AuthPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <AuthGuard requireAuth={true}>
+              <MsalAuthWrapper>
                 <div className="flex">
                   <Sidebar onLogout={handleLogout} onNavigate={handleNavigate} user={user} />
                   <div className="flex-1 ml-20">
@@ -81,13 +80,13 @@ function App() {
                   </div>
                 </div>
                 <FloatingFeedbackButton user={user} currentPageName="Hemy 360 - test by JMS" />
-              </AuthGuard>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </MsalProvider>
+              </MsalAuthWrapper>
+            </AuthGuard>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { useAuth } from '@/hooks/AuthContext';
+import { msalInstance } from '@/services/msalConfig';
 
 const msLogo = (
   <svg
@@ -27,6 +28,20 @@ export function AuthPage() {
     setIsLoading(true);
 
     try {
+      // First, initiate MSAL login for Fabric API access
+      const loginRequest = {
+        scopes: ['https://api.fabric.microsoft.com/.default'],
+      };
+
+      try {
+        await msalInstance.loginPopup(loginRequest);
+        console.log('[AuthPage] MSAL login successful');
+      } catch (msalErr) {
+        console.warn('[AuthPage] MSAL login failed, continuing with Rayfin auth:', msalErr);
+        // Continue even if MSAL fails - Rayfin auth is primary
+      }
+
+      // Then sign in with Rayfin/Fabric
       await signIn();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to sign in.');
