@@ -7,6 +7,7 @@ import {
 } from '@microsoft/fabric-embed';
 import { useMsal } from '@azure/msal-react';
 import { useAuth } from '@/hooks/AuthContext';
+import { msalInstance } from '@/services/msalConfig';
 
 export function HemyLiveDataPage() {
   const { user } = useAuth();
@@ -31,6 +32,14 @@ export function HemyLiveDataPage() {
 
         setIsLoading(true);
 
+        // Initialize MSAL instance
+        await msalInstance.initialize();
+        console.log('[HemyLiveDataPage] MSAL initialized');
+
+        // Handle redirect promise
+        await msalInstance.handleRedirectPromise();
+        console.log('[HemyLiveDataPage] MSAL redirect promise handled');
+
         // Initialize the embed manager with KQL Dashboard support
         const embedManager = new EmbedManager({
           embedClientClasses: [KQLDashboardEmbedClient],
@@ -39,26 +48,31 @@ export function HemyLiveDataPage() {
 
         // Function to acquire Fabric API token using MSAL
         const acquireToken = async (scopes?: string[]): Promise<string> => {
-          const currentAccounts = instance.getAllAccounts();
+          const tokenScopes = scopes || ['https://api.fabric.microsoft.com/.default'];
+          
+          const currentAccounts = msalInstance.getAllAccounts();
+          console.log(`[HemyLiveDataPage] Found ${currentAccounts.length} accounts in MSAL`);
           
           if (currentAccounts.length === 0) {
             throw new Error('No active user sessions found in MSAL. Please ensure you are logged in.');
           }
 
-          const targetAccount = instance.getActiveAccount() || currentAccounts[0];
-          const tokenScopes = scopes || ['https://api.fabric.microsoft.com/.default'];
+          const targetAccount = msalInstance.getActiveAccount() || currentAccounts[0];
+          console.log(`[HemyLiveDataPage] Using account: ${targetAccount.username}`);
 
-          const tokenRequest = {
+          const loginRequest = {
             scopes: tokenScopes,
             account: targetAccount,
           };
 
           try {
-            const response = await instance.acquireTokenSilent(tokenRequest);
+            const response = await msalInstance.acquireTokenSilent(loginRequest);
+            console.log('[HemyLiveDataPage] Silent token acquired successfully');
             return response.accessToken;
           } catch (silentErr) {
-            console.warn('Silent token acquisition failed, attempting interactive popup:', silentErr);
-            const response = await instance.acquireTokenPopup(tokenRequest);
+            console.warn('[HemyLiveDataPage] Silent token acquisition failed, attempting interactive popup:', silentErr);
+            const response = await msalInstance.acquireTokenPopup(loginRequest);
+            console.log('[HemyLiveDataPage] Interactive token acquired successfully');
             return response.accessToken;
           }
         };
@@ -67,6 +81,7 @@ export function HemyLiveDataPage() {
         let initialToken: string;
         try {
           initialToken = await acquireToken();
+          console.log('[HemyLiveDataPage] Initial token acquired');
         } catch (tokenErr) {
           setError(`Authentication Error: ${tokenErr instanceof Error ? tokenErr.message : 'Failed to acquire token'}`);
           setIsLoading(false);
@@ -85,7 +100,7 @@ export function HemyLiveDataPage() {
                   const token = await acquireToken(scopes);
                   return { token };
                 } catch (err) {
-                  console.error('Token provider error:', err);
+                  console.error('[HemyLiveDataPage] Token provider error:', err);
                   setError('Failed to refresh access token for dashboard.');
                   throw err;
                 }
@@ -93,13 +108,13 @@ export function HemyLiveDataPage() {
             },
             rendered: {
               callback: async () => {
-                console.log('Dashboard rendered successfully');
+                console.log('[HemyLiveDataPage] Dashboard rendered successfully');
                 setIsLoading(false);
               },
             },
             error: {
               callback: async (event: any) => {
-                console.error('Embed error:', event);
+                console.error('[HemyLiveDataPage] Embed error:', event);
                 const errorMsg = event?.message || event?.toString() || 'Unknown error';
                 setError(`Dashboard Error: ${errorMsg}`);
                 setIsLoading(false);
@@ -109,9 +124,10 @@ export function HemyLiveDataPage() {
         };
 
         // Embed the dashboard
+        console.log('[HemyLiveDataPage] Embedding dashboard...');
         await embedManager.embed(containerRef.current, config);
       } catch (err) {
-        console.error('Error embedding Fabric dashboard:', err);
+        console.error('[HemyLiveDataPage] Error embedding Fabric dashboard:', err);
         setError(`Error: ${err instanceof Error ? err.message : 'Failed to embed dashboard'}`);
         setIsLoading(false);
       }

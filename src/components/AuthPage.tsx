@@ -32,9 +32,11 @@ export function AuthPage() {
       const loginRequest = {
         scopes: ['https://api.fabric.microsoft.com/.default'],
       };
-
       try {
-        await msalInstance.loginPopup(loginRequest);
+        //await msalInstance.loginPopup(loginRequest);
+        await msalInstance.initialize();
+        await msalInstance.handleRedirectPromise();
+        msalInstance.acquireTokenSilent(loginRequest);
         console.log('[AuthPage] MSAL login successful');
       } catch (msalErr) {
         console.warn('[AuthPage] MSAL login failed, continuing with Rayfin auth:', msalErr);
