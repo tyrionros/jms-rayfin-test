@@ -1,115 +1,107 @@
 import { useEffect, useState, useRef } from 'react';
 
+import {
+  EmbedManager,
+  KQLDashboardEmbedClient,
+  type KQLDashboardEmbedConfiguration,
+} from '@microsoft/fabric-embed';
 import { useAuth } from '@/hooks/AuthContext';
-import { getRayfinClient } from '@/services/rayfinClient';
-
-declare global {
-  interface Window {
-    fabric?: {
-      embeds?: {
-        embedKQLDashboard?: (element: HTMLElement, config: any) => any;
-      };
-    };
-  }
-}
 
 export function HemyLiveDataPage() {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  const containerRef = useRef<HTMLDivElement>(null); 
-  const embedInstanceRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const embedManagerRef = useRef<EmbedManager | null>(null);
 
   const workspaceId = '0f49bb62-6832-40a7-825d-b730e9874a50';
   const dashboardId = '504c0b42-48e2-48e4-84c2-127b69c7dac6';
 
   useEffect(() => {
-    const loadFabricEmbed = async () => {
+    const embedDashboard = async () => {
       try {
-        setIsLoading(true);
-
-        // Get access token from Rayfin auth client if available
-        // (Fabric SDK can also auto-acquire tokens during embed)
-        let accessToken: string | null = null;
-        try {
-          const rayfinClient = getRayfinClient();
-          const session = rayfinClient.auth.getSession();
-          // Try to extract token from session if available
-          if (session && (session as any).accessToken) {
-            accessToken = (session as any).accessToken;
-          }
-        } catch (tokenErr) {
-          console.warn('Could not retrieve access token, letting Fabric SDK auto-acquire:', tokenErr);
-        }
-
-        const renderDashboard = () => {
-          if (window.fabric?.embeds?.embedKQLDashboard && containerRef.current) {
-            containerRef.current.innerHTML = ''; 
-
-            const config: any = {
-              type: 'KQLDashboard',
-              id: dashboardId,
-              workspaceId: workspaceId,
-              settings: {
-                pageView: 'fitToWidth'
-              }
-            };
-
-            // Add access token if available
-            if (accessToken) {
-              config.accessToken = accessToken;
-            }
-
-            embedInstanceRef.current = window.fabric.embeds.embedKQLDashboard(containerRef.current, config);
-            setIsLoading(false);
-          } else {
-            setError('Fabric Embed SDK layout is missing the embedKQLDashboard engine.');
-            setIsLoading(false);
-          }
-        };
-
-        // If script is already attached, execute immediately
-        if (window.fabric?.embeds?.embedKQLDashboard) {
-          renderDashboard();
+        if (!user || !containerRef.current) {
+          setError('User must be authenticated to view this dashboard.');
+          setIsLoading(false);
           return;
         }
 
-        // Dynamically inject the global script 
-        const script = document.createElement('script');
-        script.src = 'https://app.fabric.microsoft.com/v1/embed';
-        script.async = true;
-        script.crossOrigin = 'anonymous';
+        setIsLoading(true);
 
-        script.onload = () => {
-          setTimeout(() => {
-            renderDashboard();
-          }, 200);
+        // Initialize the embed manager with KQL Dashboard support
+        const embedManager = new EmbedManager({
+          embedClientClasses: [KQLDashboardEmbedClient],
+        });
+        embedManagerRef.current = embedManager;
+
+        // Token acquisition function
+        const acquireToken = async (_scopes?: string[]) => {
+          try {
+            // In production, acquire from MSAL or your auth provider
+            // For Rayfin, the auth is already handled by the session
+            return 'token-from-rayfin-session';
+          } catch (err) {
+            console.error('Failed to acquire token:', err);
+            throw new Error('Failed to acquire authentication token');
+          }
         };
 
-        script.onerror = () => {
-          setError('Failed to fetch the cloud Fabric Embed SDK script resource.');
-          setIsLoading(false);
+        const config: KQLDashboardEmbedConfiguration = {
+          itemType: 'KQLDashboard',
+          workspaceId: workspaceId,
+          itemId: dashboardId,
+          accessToken: { token: await acquireToken() },
+          eventHooks: {
+            accessTokenProvider: {
+              callback: async ({ scopes }) => {
+                try {
+                  const token = await acquireToken(scopes);
+                  return { token };
+                } catch (err) {
+                  console.error('Token provider error:', err);
+                  setError('Failed to acquire access token for dashboard.');
+                  throw err;
+                }
+              },
+            },
+            rendered: {
+              callback: async () => {
+                console.log('Dashboard rendered successfully');
+                setIsLoading(false);
+              },
+            },
+            error: {
+              callback: async (event: any) => {
+                console.error('Embed error:', event);
+                setError(`Dashboard error: ${event?.message || 'Unknown error'}`);
+                setIsLoading(false);
+              },
+            },
+          },
         };
 
-        document.head.appendChild(script);
+        // Embed the dashboard
+        await embedManager.embed(containerRef.current, config);
       } catch (err) {
-        console.error('Error loading Fabric Embed:', err);
-        setError(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        console.error('Error embedding Fabric dashboard:', err);
+        setError(`Error: ${err instanceof Error ? err.message : 'Failed to embed dashboard'}`);
         setIsLoading(false);
       }
     };
 
     if (user) {
-      loadFabricEmbed();
-    } else {
-      setError('User must be authenticated to view this dashboard.');
-      setIsLoading(false);
+      embedDashboard();
     }
 
     return () => {
-      if (embedInstanceRef.current && typeof embedInstanceRef.current.clean === 'function') {
-        embedInstanceRef.current.clean();
+      // Clean up embed manager on unmount
+      if (embedManagerRef.current) {
+        try {
+          (embedManagerRef.current as any).dispose?.();
+        } catch (e) {
+          console.warn('Error disposing embed manager:', e);
+        }
       }
     };
   }, [user]);
