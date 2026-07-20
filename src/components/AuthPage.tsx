@@ -61,10 +61,10 @@ export function AuthPage() {
             </svg>
           </span>
           <h1 className="text-2xl font-bold tracking-tight text-[#021838]">
-            Hemy 360 - test by JMS
+            Hemy 360 (prototype)
           </h1>
           <p className="mt-1.5 text-sm text-[#7C4D2F]">
-            Sign in to manage your tasks.
+            Sign in to manage your property operations.
           </p>
         </div>
 
@@ -87,7 +87,7 @@ export function AuthPage() {
         </div>
 
         <p className="mt-6 text-center text-xs text-[#C4956A]">
-          Powered by Rayfin on Microsoft Fabric
+          Powered by Rayfin on Microsoft Fabric. Built by Hemy AS.
         </p>
       </div>
     </div>

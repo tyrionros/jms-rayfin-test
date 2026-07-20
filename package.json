@@ -19,6 +19,7 @@
     "rayfin:db": "rayfin up db apply"
   },
   "dependencies": {
+    "@microsoft/fabric-embed": "^0.1.0",
     "@microsoft/rayfin-auth-provider-fabric": "^1.33.2",
     "@microsoft/rayfin-client": "^1.33.2",
     "@microsoft/rayfin-core": "^1.33.2",
