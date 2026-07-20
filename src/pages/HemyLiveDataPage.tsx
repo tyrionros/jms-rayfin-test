@@ -96,7 +96,7 @@ export function HemyLiveDataPage({ onNavigate }: { onNavigate?: (pageId: string)
 
         // Token provider function relying entirely on safe, non-blocking calls
         const acquireToken = async (scopes?: string[]): Promise<string> => {
-          const tokenScopes = scopes || ['https://api.fabric.microsoft.com/.default'];
+          const tokenScopes = scopes || ['https://analysis.windows.net/powerbi/api/Report.Read.All'];
           const accounts = msalInstance.getAllAccounts();
           const targetAccount = msalInstance.getActiveAccount() || accounts[0];
 
