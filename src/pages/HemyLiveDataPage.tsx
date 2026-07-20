@@ -22,6 +22,19 @@ export function HemyLiveDataPage({ onNavigate }: { onNavigate?: (pageId: string)
   const workspaceId = '0f49bb62-6832-40a7-825d-b730e9874a50';
   const dashboardId = '504c0b42-48e2-48e4-84c2-127b69c7dac6';
 
+  const handleReloadWithNewToken = async () => {
+    try {
+      const accounts = msalInstance.getAllAccounts();
+      if (accounts.length > 0) {
+        await msalInstance.logoutPopup({ account: accounts[0] });
+      }
+      window.location.reload();
+    } catch (err) {
+      console.error('[HemyLiveDataPage] Error during token refresh:', err);
+      window.location.reload();
+    }
+  };
+
   // Explicit user-triggered login action for MSAL environment context
   const handleMsalLogin = async () => {
     try {
@@ -176,6 +189,25 @@ export function HemyLiveDataPage({ onNavigate }: { onNavigate?: (pageId: string)
             </span>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              onClick={handleReloadWithNewToken}
+              className="p-2 rounded-lg hover:bg-[#FAF8F2]/20 transition duration-200"
+              title="Clear token cache and reload"
+            >
+              <svg
+                className="w-5 h-5 text-[#FAF8F2]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+            </button>
             <ActionMenu
               title="My Action"
               items={[
