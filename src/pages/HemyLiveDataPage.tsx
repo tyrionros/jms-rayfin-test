@@ -36,10 +36,10 @@ export function HemyLiveDataPage() {
         });
         embedManagerRef.current = embedManager;
 
-        // Acquire initial token using MSAL (pass user email to help find account)
+        // Acquire initial token using Rayfin's existing Fabric auth
         let initialToken: string;
         try {
-          initialToken = await acquireFabricToken(user?.email);
+          initialToken = await acquireFabricToken();
         } catch (tokenErr) {
           setError(`Authentication Error: ${tokenErr instanceof Error ? tokenErr.message : 'Failed to acquire token'}`);
           setIsLoading(false);
@@ -55,7 +55,7 @@ export function HemyLiveDataPage() {
             accessTokenProvider: {
               callback: async ({ scopes }) => {
                 try {
-                  const token = await acquireFabricToken(user?.email, scopes);
+                  const token = await acquireFabricToken(scopes);
                   return { token };
                 } catch (err) {
                   console.error('Token provider error:', err);
