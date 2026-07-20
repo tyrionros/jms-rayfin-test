@@ -10,6 +10,7 @@ import { HemyXPage } from '@/pages/HemyXPage';
 import { HemyProjectsPage } from '@/pages/HemyProjectsPage';
 import { HemyReportsPage } from '@/pages/HemyReportsPage';
 import { HemyDataPage } from '@/pages/HemyDataPage';
+import { HemyLiveDataPage } from '@/pages/HemyLiveDataPage';
 import { MyActionPage } from '@/pages/MyActionPage';
 import { WebRTCStreamPage } from '@/pages/WebRTCStreamPage';
 
@@ -68,6 +69,7 @@ function App() {
                 <div className="flex-1 ml-20">
                   {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
                   {currentPage === 'omniverse' && <WebRTCStreamPage />}
+                  {currentPage === 'hemlivedata' && <HemyLiveDataPage />}
                   {currentPage === 'hemyx' && <HemyXPage />}
                   {currentPage === 'hemyprojects' && <HemyProjectsPage />}
                   {currentPage === 'hemyreports' && <HemyReportsPage />}
