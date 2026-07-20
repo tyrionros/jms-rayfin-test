@@ -30,7 +30,7 @@ export function AuthPage() {
     try {
       // First, initiate MSAL login for Fabric API access
       const loginRequest = {
-        scopes: ['https://api.fabric.microsoft.com/.default'],
+        scopes: ['https://analysis.windows.net/powerbi/api/Report.Read.All'],
       };
       try {
         //await msalInstance.loginPopup(loginRequest);

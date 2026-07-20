@@ -1,11 +1,19 @@
 import { Configuration, PublicClientApplication, LogLevel } from '@azure/msal-browser';
 
-// MSAL Configuration for your Hemy 360 app
+// Dynamically determine redirect URI based on window context
+const getRedirectUri = () => {
+  if (typeof window !== 'undefined') {
+    // If running locally, matches localhost; otherwise returns the hosted fabricapps.net URL
+    return window.location.origin + '/';
+  }
+  return 'https://kind-whirl-780273fc10-norwayeast.webapp.fabricapps.net/';
+};
+
 export const msalConfig: Configuration = {
   auth: {
-    clientId: 'b803e462-b15d-4173-b74e-eea251f95179', // Hemy 360 - Rayfin Portal
+    clientId: 'b803e462-b15d-4173-b74e-eea251f95179', 
     authority: 'https://login.microsoftonline.com/ead65215-ebfd-4a8d-9e73-b403a85a7e04',
-    redirectUri: 'https://kind-whirl-780273fc10-norwayeast.webapp.fabricapps.net/',
+    redirectUri: getRedirectUri(), // ◄ Automatically swaps between local and production environment
   },
   cache: {
     cacheLocation: 'sessionStorage',
@@ -21,5 +29,4 @@ export const msalConfig: Configuration = {
   },
 };
 
-// Initialize MSAL instance
 export const msalInstance = new PublicClientApplication(msalConfig);
