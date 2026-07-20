@@ -1,4 +1,4 @@
-# Hemy 360 — Hemy Live Data & BMS Dashboard
+# Hemy 360 (prototype)
 
 A sophisticated Fabric-authenticated data dashboard built on React + Vite and Rayfin,
 featuring Microsoft Fabric KQL Dashboard embedding with real-time capacity metrics.
