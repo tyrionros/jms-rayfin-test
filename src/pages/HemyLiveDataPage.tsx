@@ -1,5 +1,15 @@
 import { useEffect, useState } from 'react';
 
+declare global {
+  interface Window {
+    fabric?: {
+      embeds?: {
+        embedKQLDashboard?: (element: HTMLElement | null, config: any) => void;
+      };
+    };
+  }
+}
+
 export function HemyLiveDataPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -11,27 +21,62 @@ export function HemyLiveDataPage() {
     const loadFabricEmbed = async () => {
       try {
         setIsLoading(true);
-        // Load the Fabric Embed SDK
-        const script = document.createElement('script');
-        script.src = 'https://app.fabric.microsoft.com/v1/embed';
-        script.async = true;
-        script.onload = () => {
-          // SDK loaded, embed the dashboard
-          if ((window as any).fabric && (window as any).fabric.embeds) {
-            (window as any).fabric.embeds.embedKQLDashboard(document.getElementById('fabric-embed'), {
+
+        // Check if SDK is already loaded
+        if ((window as any).fabric?.embeds?.embedKQLDashboard) {
+          const element = document.getElementById('fabric-embed');
+          if (element) {
+            (window as any).fabric.embeds.embedKQLDashboard(element, {
               dashboardId: dashboardId,
               groupId: workspaceId,
               pageView: 'fitToWidth',
             });
           }
           setIsLoading(false);
+          return;
+        }
+
+        // Load the Fabric Embed SDK
+        const script = document.createElement('script');
+        script.src = 'https://app.fabric.microsoft.com/v1/embed';
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+
+        script.onload = () => {
+          // Give the SDK a moment to initialize
+          setTimeout(() => {
+            if ((window as any).fabric?.embeds?.embedKQLDashboard) {
+              const element = document.getElementById('fabric-embed');
+              if (element) {
+                (window as any).fabric.embeds.embedKQLDashboard(element, {
+                  dashboardId: dashboardId,
+                  groupId: workspaceId,
+                  pageView: 'fitToWidth',
+                });
+              }
+              setIsLoading(false);
+            } else {
+              setError('Fabric Embed SDK loaded but embedKQLDashboard method not available. Check Fabric admin settings.');
+              setIsLoading(false);
+            }
+          }, 500);
         };
-        script.onerror = () => {
-          setError('Failed to load Fabric Embed SDK');
+
+        script.onerror = (err) => {
+          console.error('Script load error:', err);
+          setError(
+            'Failed to load Fabric Embed SDK. Please verify:\n' +
+            '1. Fabric admin center has embedding enabled\n' +
+            '2. Your workspace has Premium capacity\n' +
+            '3. You have Member/Admin role in the workspace\n' +
+            '4. Check browser console for more details'
+          );
           setIsLoading(false);
         };
+
         document.head.appendChild(script);
       } catch (err) {
+        console.error('Error loading Fabric Embed:', err);
         setError(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
         setIsLoading(false);
       }
