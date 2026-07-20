@@ -6,6 +6,7 @@ import {
   type KQLDashboardEmbedConfiguration,
 } from '@microsoft/fabric-embed';
 import { useAuth } from '@/hooks/AuthContext';
+import { acquireFabricToken } from '@/services/fabricTokenService';
 
 export function HemyLiveDataPage() {
   const { user } = useAuth();
@@ -35,59 +36,10 @@ export function HemyLiveDataPage() {
         });
         embedManagerRef.current = embedManager;
 
-        // Token acquisition function - acquires real Azure AD token for Fabric API
-        const acquireToken = async (scopes?: string[]): Promise<string> => {
-          try {
-            const { getRayfinClient } = await import('@/services/rayfinClient');
-            const rayfinClient = getRayfinClient();
-            
-            // Try to get access token from Rayfin's internal auth client
-            // The Rayfin client has access to the token through its auth provider
-            try {
-              // Attempt to access the underlying MSAL instance if available
-              const authClient = (rayfinClient.auth as any)._client || (rayfinClient.auth as any).client;
-              
-              if (authClient?.acquireTokenSilent) {
-                const tokenScopes = scopes || ['https://api.fabric.microsoft.com/.default'];
-                const result = await authClient.acquireTokenSilent({
-                  scopes: tokenScopes,
-                });
-                return result.accessToken;
-              }
-            } catch (internalErr) {
-              console.warn('Could not access internal Rayfin auth client:', internalErr);
-            }
-            
-            // Fallback: Check if token is in session or window
-            const session = rayfinClient.auth.getSession();
-            if ((session as any).accessToken) {
-              return (session as any).accessToken;
-            }
-            
-            // Last resort: Check window for MSAL instance
-            const msalInstance = (window as any).msalInstance || (window as any).msal;
-            if (msalInstance?.acquireTokenSilent) {
-              const tokenScopes = scopes || ['https://api.fabric.microsoft.com/.default'];
-              const result = await msalInstance.acquireTokenSilent({
-                scopes: tokenScopes,
-              });
-              return result.accessToken;
-            }
-            
-            throw new Error('Unable to acquire token from Rayfin auth, MSAL instance, or session');
-          } catch (err) {
-            console.error('Token acquisition failed:', err);
-            throw new Error(
-              `Failed to acquire access token: ${err instanceof Error ? err.message : String(err)}. ` +
-              'Ensure your Rayfin app is properly authenticated and has permission to access Fabric APIs.'
-            );
-          }
-        };
-
-        // Acquire initial token
+        // Acquire initial token using MSAL
         let initialToken: string;
         try {
-          initialToken = await acquireToken();
+          initialToken = await acquireFabricToken();
         } catch (tokenErr) {
           setError(`Authentication Error: ${tokenErr instanceof Error ? tokenErr.message : 'Failed to acquire token'}`);
           setIsLoading(false);
@@ -103,7 +55,7 @@ export function HemyLiveDataPage() {
             accessTokenProvider: {
               callback: async ({ scopes }) => {
                 try {
-                  const token = await acquireToken(scopes);
+                  const token = await acquireFabricToken(scopes);
                   return { token };
                 } catch (err) {
                   console.error('Token provider error:', err);
