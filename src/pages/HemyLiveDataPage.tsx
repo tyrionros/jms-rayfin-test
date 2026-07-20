@@ -35,23 +35,66 @@ export function HemyLiveDataPage() {
         });
         embedManagerRef.current = embedManager;
 
-        // Token acquisition function
-        const acquireToken = async (_scopes?: string[]) => {
+        // Token acquisition function - acquires real Azure AD token for Fabric API
+        const acquireToken = async (scopes?: string[]): Promise<string> => {
           try {
-            // In production, acquire from MSAL or your auth provider
-            // For Rayfin, the auth is already handled by the session
-            return 'token-from-rayfin-session';
+            // Try to get MSAL instance that Rayfin uses
+            await import('@azure/msal-browser');
+            
+            // Check if MSAL instance exists in window (Rayfin may set it up)
+            const msalInstance = (window as any).msalInstance || (window as any).msal;
+            
+            if (!msalInstance) {
+              throw new Error('MSAL instance not available');
+            }
+
+            // Default scopes for Fabric API if not provided
+            const tokenScopes = scopes || ['https://api.fabric.microsoft.com/.default'];
+
+            // Attempt to get token silently (from cache or refresh token)
+            const result = await msalInstance.acquireTokenSilent({
+              scopes: tokenScopes,
+            });
+
+            return result.accessToken;
           } catch (err) {
-            console.error('Failed to acquire token:', err);
-            throw new Error('Failed to acquire authentication token');
+            console.error('Token acquisition error:', err);
+            
+            // Fallback: try to get from Rayfin session if available
+            try {
+              const { getRayfinClient } = await import('@/services/rayfinClient');
+              const rayfinClient = getRayfinClient();
+              const session = rayfinClient.auth.getSession();
+              
+              // Rayfin may have exposed the token somehow
+              if ((session as any).accessToken) {
+                return (session as any).accessToken;
+              }
+            } catch (fallbackErr) {
+              console.warn('Rayfin token fallback failed:', fallbackErr);
+            }
+
+            throw new Error(
+              'Failed to acquire access token. Ensure you are logged in and have permission to access the Fabric workspace.'
+            );
           }
         };
+
+        // Acquire initial token
+        let initialToken: string;
+        try {
+          initialToken = await acquireToken();
+        } catch (tokenErr) {
+          setError(`Authentication Error: ${tokenErr instanceof Error ? tokenErr.message : 'Failed to acquire token'}`);
+          setIsLoading(false);
+          return;
+        }
 
         const config: KQLDashboardEmbedConfiguration = {
           itemType: 'KQLDashboard',
           workspaceId: workspaceId,
           itemId: dashboardId,
-          accessToken: { token: await acquireToken() },
+          accessToken: { token: initialToken },
           eventHooks: {
             accessTokenProvider: {
               callback: async ({ scopes }) => {
@@ -60,7 +103,7 @@ export function HemyLiveDataPage() {
                   return { token };
                 } catch (err) {
                   console.error('Token provider error:', err);
-                  setError('Failed to acquire access token for dashboard.');
+                  setError('Failed to refresh access token for dashboard.');
                   throw err;
                 }
               },
@@ -74,7 +117,8 @@ export function HemyLiveDataPage() {
             error: {
               callback: async (event: any) => {
                 console.error('Embed error:', event);
-                setError(`Dashboard error: ${event?.message || 'Unknown error'}`);
+                const errorMsg = event?.message || event?.toString() || 'Unknown error';
+                setError(`Dashboard Error: ${errorMsg}`);
                 setIsLoading(false);
               },
             },
@@ -109,10 +153,18 @@ export function HemyLiveDataPage() {
   return (
     <div className="flex flex-col h-screen bg-[#FAF8F2]">
       {/* Header */}
-      <div className="bg-[#021838] text-white py-4 px-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Hemy Live Data & BMS</h1>
-      </div>
-
+            <header className="sticky top-0 z-40 border-b border-[#DDD4C0] bg-[#021838] shadow-md">
+        <div className="flex items-center justify-between px-8 py-4">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C4D2F] text-[#FAF8F2]">
+              <Hemy360Icon className="h-4 w-4" />
+            </span>
+            <span className="text-base font-semibold tracking-tight text-[#FAF8F2]" title="Hemy 360 - test by JMS">
+              Hemy Live Data & BMS
+            </span>
+          </div>
+        </div>
+      </header>
       {/* Content */}
       <div className="flex-1 overflow-hidden p-4 relative">
         {isLoading && (
@@ -144,3 +196,42 @@ export function HemyLiveDataPage() {
     </div>
   );
 }
+function Hemy360Icon({
+  className,
+}: {
+  className?: string;
+}) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      {/* Letter H */}
+      <text
+        x="12"
+        y="16"
+        fontSize="14"
+        fontWeight="bold"
+        textAnchor="middle"
+        fill="currentColor"
+        fontFamily="sans-serif"
+      >
+        H
+      </text>
+      {/* Circular arrow 360 degrees - arc with arrowhead */}
+      <path
+        d="M 12 3 A 9 9 0 0 1 21 12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      {/* Arrowhead */}
+      <path d="M 21 12 L 19.5 10.5 L 20.5 11.5" fill="currentColor" />
+    </svg>
+  );
+}
+
