@@ -63,7 +63,7 @@ npm run rayfin:up  # Deploy to Fabric (runs automatic build + deploy)
 
 ### 🧭 Navigation
 - **Sidebar menu** with collapsible navigation (responsive to screen size)
-- Menu items: Home, Explore, Messages, Resources, Starred, Settings, Log Out
+- Menu items: Home, Digital Twin, Hemy Live Data & BMS, Reports & Data, Hemy X, Hemy Projects, Hemy Sale, Hemy Finance, Property Information, Hemy Modules, Hemy Connect, Log Out
 - **Action dropdown** in header for user actions
 - Mobile-aware layout with breakpoints
 
