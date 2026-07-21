@@ -37,13 +37,13 @@ npm run rayfin:up  # Deploy to Fabric (runs automatic build + deploy)
 │   │   └── MsalAuthWrapper.tsx # Route-level MSAL redirect handler
 │   ├── pages/
 │   │   ├── HemyLiveDataPage.tsx  # Fabric KQL Dashboard embed + MSAL token provider
-|   |   ├── HemyXPage.tsx         # Dynamics 365 CRM Page in iframe
-|   |   ├── HemyDataPage.tsx      # Dummy page for Dynamics 365 Hemy Data page in iframe
-|   |   ├── HemyProjectsPage.tsx  # Dynamics 365 Projects page in iframe
-|   |   ├── HomePage.tsx          # Default Home page from the ToDo app rayfin template
-|   |   ├── MyActionPage.tsx      # Hemy Action dashboard page in iframe
-|   |   ├── WebRTCStreamPage.tsx  # Streamer page for testing of Omniverse streaming site
-|   |   ├── HemyReportsPage.tsx   # Hemy Reports Dynamics 365 page in iframe
+│   │   ├── HemyXPage.tsx         # Dynamics 365 CRM Page in iframe
+│   │   ├── HemyDataPage.tsx      # Dummy page for Dynamics 365 Hemy Data page in iframe
+│   │   ├── HemyProjectsPage.tsx  # Dynamics 365 Projects page in iframe
+│   │   ├── HomePage.tsx          # Default Home page from the ToDo app rayfin template
+│   │   ├── MyActionPage.tsx      # Hemy Action dashboard page in iframe
+│   │   ├── WebRTCStreamPage.tsx  # Streamer page for testing of Omniverse streaming site
+│   │   └── HemyReportsPage.tsx   # Hemy Reports Dynamics 365 page in iframe
 │   └── services/
 │       ├── IAuthService.ts        # Auth service contract
 │       ├── RayfinAuthService.ts   # Fabric brokered auth
