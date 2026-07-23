@@ -4,7 +4,7 @@ import { SendRegular, DismissRegular } from '@fluentui/react-icons';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useMsal } from '@azure/msal-react';
+import { useAuth } from '@/hooks/AuthContext';
 
 interface TableData {
   headers: string[];
@@ -29,9 +29,10 @@ interface Message {
 
 // AI Foundry agent endpoint using OpenAI protocol
 const AI_AGENT_ENDPOINT = 'https://hemy-ai.services.ai.azure.com/api/projects/hemy-ai/agents/Hemy-AI-Foundry/endpoint/protocols/openai/responses';
+const AI_API_VERSION = '1.0.0';
 
 export function HemyAIPage() {
-  const { instance: msalInstance } = useMsal(); // Use MSAL from context (initialized in main.tsx)
+  const { user, isAuthenticated } = useAuth(); // Use Rayfin's authenticated user
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -52,31 +53,19 @@ export function HemyAIPage() {
     scrollToBottom();
   }, [messages]);
 
-  const getAccessToken = async (): Promise<string> => {
-    const accounts = msalInstance.getAllAccounts();
-    const targetAccount = msalInstance.getActiveAccount() || accounts[0];
-
-    if (!targetAccount) {
-      throw new Error('No authenticated user found');
-    }
-
-    const tokenRequest = {
-      scopes: ['https://api.fabric.microsoft.com/.default'],
-      account: targetAccount,
-    };
-
-    try {
-      const response = await msalInstance.acquireTokenSilent(tokenRequest);
-      console.log('[HemyAI] Token acquired successfully');
-      return response.accessToken;
-    } catch (error) {
-      console.error('[HemyAI] Token acquisition failed:', error);
-      throw new Error('Failed to acquire authentication token');
-    }
-  };
-
   const handleSendMessage = async () => {
     if (!input.trim()) return;
+
+    if (!isAuthenticated || !user) {
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: '❌ **Authentication Required**: Please sign in to use Hemy AI.',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -90,15 +79,15 @@ export function HemyAIPage() {
     setIsLoading(true);
 
     try {
-      // Get user's authentication token
-      const accessToken = await getAccessToken();
-
       // Call the AI Foundry agent endpoint with OpenAI protocol
+      // Using Rayfin's authenticated user context
       const response = await fetch(AI_AGENT_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
+          'api-version': AI_API_VERSION, // Azure AI Foundry agent version
+          'X-User-Id': user.id, // Pass authenticated user context
+          'X-User-Email': user.email, // Pass user email for context
         },
         body: JSON.stringify({
           messages: messages.map((msg) => ({
