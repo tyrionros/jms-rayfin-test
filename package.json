@@ -19,7 +19,9 @@
     "rayfin:db": "rayfin up db apply"
   },
   "dependencies": {
+    "@azure/msal-browser": "^5.17.1",
     "@azure/msal-react": "^5.5.3",
+    "@fluentui/react-components": "^9.74.4",
     "@microsoft/fabric-embed": "^0.1.0",
     "@microsoft/rayfin-auth-provider-fabric": "^1.33.2",
     "@microsoft/rayfin-client": "^1.33.2",
