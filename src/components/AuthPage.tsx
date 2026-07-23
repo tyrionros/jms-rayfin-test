@@ -28,27 +28,69 @@ export function AuthPage() {
     setIsLoading(true);
 
     try {
-      // MSAL is already initialized in main.tsx, just attempt silent token acquisition
-      const loginRequest = {
-        scopes: ['https://api.fabric.microsoft.com/.default'],
-      };
-      try {
-        // MSAL is already initialized, just acquire token
-        const redirectResult = await msalInstance.handleRedirectPromise();
-        if (redirectResult?.accessToken) {
-          console.log('[AuthPage] Token acquired from redirect');
-        } else {
-          await msalInstance.acquireTokenSilent(loginRequest);
-        }
-        console.log('[AuthPage] MSAL token acquisition successful');
-      } catch (msalErr) {
-        console.warn('[AuthPage] MSAL silent token failed, continuing with Rayfin auth:', msalErr);
-        // Continue even if MSAL fails - Rayfin auth is primary
+      console.log('[AuthPage] Sign in initiated...');
+
+      // Step 1: Handle redirect from login page (if returning from Microsoft auth)
+      console.log('[AuthPage] Checking for redirect from Microsoft auth...');
+      const redirectResult = await msalInstance.handleRedirectPromise();
+      if (redirectResult) {
+        console.log('[AuthPage] ✅ Returned from Microsoft auth redirect');
+        console.log('[AuthPage] Active account:', redirectResult.account?.username);
+      } else {
+        console.log('[AuthPage] No redirect to handle (first-time login or direct access)');
       }
 
-      // Then sign in with Rayfin/Fabric
+      // Step 2: Get all accounts and set active account
+      const accounts = msalInstance.getAllAccounts();
+      console.log('[AuthPage] Found accounts:', accounts.length);
+      if (accounts.length > 0) {
+        msalInstance.setActiveAccount(accounts[0]);
+        console.log('[AuthPage] ✅ Active account set:', accounts[0].username);
+      } else {
+        console.log('[AuthPage] No accounts found yet');
+      }
+
+      // Step 3: Attempt silent token acquisition for Azure AI Foundry scope
+      console.log('[AuthPage] Attempting silent token acquisition...');
+      const aiFoundryRequest = {
+        scopes: ['https://ai.azure.com/.default'],
+      };
+      
+      try {
+        const tokenResponse = await msalInstance.acquireTokenSilent(aiFoundryRequest);
+        console.log('[AuthPage] ✅ Silent token acquired for Azure AI');
+        if (tokenResponse.expiresOn) {
+          console.log('[AuthPage] Token expires at:', new Date(tokenResponse.expiresOn).toISOString());
+        }
+        console.log('[AuthPage] Account:', tokenResponse.account?.username);
+      } catch (silentErr) {
+        console.warn('[AuthPage] ⚠️ Silent token acquisition failed:', silentErr);
+        console.log('[AuthPage] This is normal for first-time login - will acquire during Rayfin sign in');
+      }
+
+      // Step 4: Attempt silent token acquisition for Fabric scope
+      console.log('[AuthPage] Attempting silent token for Fabric scope...');
+      const fabricRequest = {
+        scopes: ['https://api.fabric.microsoft.com/.default'],
+      };
+      
+      try {
+        const fabricToken = await msalInstance.acquireTokenSilent(fabricRequest);
+        console.log('[AuthPage] ✅ Silent token acquired for Fabric');
+        console.log('[AuthPage] Token scope:', fabricToken.scopes);
+      } catch (fabricErr) {
+        console.warn('[AuthPage] ⚠️ Fabric silent token failed:', fabricErr);
+        console.log('[AuthPage] Will acquire during Rayfin sign in');
+      }
+
+      console.log('[AuthPage] MSAL token initialization complete, proceeding with Rayfin auth...');
+
+      // Step 5: Sign in with Rayfin/Fabric (primary auth method)
+      console.log('[AuthPage] Signing in with Rayfin...');
       await signIn();
+      console.log('[AuthPage] ✅ Rayfin sign in successful');
     } catch (err) {
+      console.error('[AuthPage] Sign in error:', err);
       setError(err instanceof Error ? err.message : 'Failed to sign in.');
     } finally {
       setIsLoading(false);
