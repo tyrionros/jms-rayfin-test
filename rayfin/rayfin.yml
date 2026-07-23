@@ -22,4 +22,4 @@ services:
   storage:
     enabled: false
   functions:
-    enabled: true
+    enabled: false

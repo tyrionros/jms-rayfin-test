@@ -1,0 +1,76 @@
+{
+  "runtime": "TypeScript",
+  "functionsMetadata": [
+    {
+      "name": "helloWorld",
+      "scriptFile": "src/function_app.ts",
+      "bindings": [
+        {
+          "name": "req",
+          "type": "httpTrigger",
+          "direction": "in",
+          "authLevel": "anonymous",
+          "methods": [
+            "post"
+          ],
+          "route": "helloWorld"
+        },
+        {
+          "name": "$return",
+          "type": "http",
+          "direction": "out"
+        }
+      ],
+      "fabricProperties": {
+        "fabricMetadataSchemaVersion": "1.0",
+        "fabricFunctionReturnType": "string",
+        "fabricFunctionParameters": [
+          {
+            "name": "firstName",
+            "dataType": "string",
+            "hasDefaultValue": false
+          },
+          {
+            "name": "lastName",
+            "dataType": "string",
+            "hasDefaultValue": false
+          }
+        ]
+      },
+      "functionCode": "udf.func('helloWorld', (firstName: string, lastName: string): string => {\r\n  console.log(`helloWorld invoked for ${firstName} ${lastName}`);\r\n  return `Hello ${firstName} ${lastName}!`;\r\n}, [])"
+    },
+    {
+      "name": "chatWithAI",
+      "scriptFile": "src/function_app.ts",
+      "bindings": [
+        {
+          "name": "req",
+          "type": "httpTrigger",
+          "direction": "in",
+          "authLevel": "anonymous",
+          "methods": [
+            "post"
+          ],
+          "route": "chatWithAI"
+        },
+        {
+          "name": "$return",
+          "type": "http",
+          "direction": "out"
+        }
+      ],
+      "fabricProperties": {
+        "fabricMetadataSchemaVersion": "1.0",
+        "fabricFunctionReturnType": "Promise<AIResponse>",
+        "fabricFunctionParameters": [
+          {
+            "name": "userMessage",
+            "dataType": "string",
+            "hasDefaultValue": false
+          }
+        ]
+      },
+      "functionCode": "udf.func(\r\n  'chatWithAI',\r\n  async (userMessage: string): Promise<AIResponse> => {\r\n    const endpoint = process.env.VITE_AI_FOUNDRY_ENDPOINT;\r\n    const apiKey = process.env.VITE_AI_FOUNDRY_API_KEY;\r\n\r\n    console.log('[AI Chat Function] Processing message:', userMessage.substring(0, 50) + '...');\r\n\r\n    if (!endpoint || !apiKey) {\r\n      console.error('[AI Chat Function] Configuration missing');\r\n      return {\r\n        content: '❌ **Configuration Error**: AI Foundry not configured on server',\r\n      };\r\n    }\r\n\r\n    try {\r\n      console.log('[AI Chat Function] Calling endpoint:', endpoint);\r\n      \r\n      // Call Azure AI Foundry API using fetch\r\n      const response = await fetch(`${endpoint}/chat/completions`, {\r\n        method: 'POST',\r\n        headers: {\r\n          'Content-Type': 'application/json',\r\n          'api-key': apiKey,\r\n        },\r\n        body: JSON.stringify({\r\n          messages: [\r\n            {\r\n              role: 'user',\r\n              content: userMessage,\r\n            },\r\n          ],\r\n          max_tokens: 1024,\r\n          temperature: 0.7,\r\n        }),\r\n      });\r\n\r\n      if (!response.ok) {\r\n        const errorText = await response.text();\r\n        console.error('[AI Chat Function] API error:', response.status, errorText);\r\n        return {\r\n          content: `❌ **API Error**: ${response.status}\\n\\nServer logs have details.`,\r\n        };\r\n      }\r\n\r\n      const data = await response.json();\r\n      console.log('[AI Chat Function] Response received');\r\n\r\n      // Parse the response - Azure AI Foundry returns choices array\r\n      const content = \r\n        data.choices?.[0]?.message?.content ||\r\n        data.content ||\r\n        data.text ||\r\n        'No response from AI';\r\n\r\n      return {\r\n        content,\r\n        // If API returns structured data, parse it here\r\n        table: data.table,\r\n        chart: data.chart,\r\n      };\r\n    } catch (error) {\r\n      console.error('[AI Chat Function] Request failed:', error);\r\n      return {\r\n        content: `❌ **Error**: ${error instanceof Error ? error.message : 'Connection failed'}\\n\\nCheck server logs for details.`,\r\n      };\r\n    }\r\n  },\r\n  []\r\n)"
+    }
+  ]
+}

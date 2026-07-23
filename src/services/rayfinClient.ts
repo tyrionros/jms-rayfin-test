@@ -1,22 +1,21 @@
 import { RayfinClient } from '@microsoft/rayfin-client';
 
 import type { TodoAppSchema } from '../../rayfin/data/schema';
-import type { AppFunctionsSchema } from '../../rayfin/functions/src/types';
 
 export interface RayfinClientConfig {
   baseUrl: string;
   publishableKey: string;
 }
 
-let client: RayfinClient<TodoAppSchema, AppFunctionsSchema> | null = null;
+let client: RayfinClient<TodoAppSchema> | null = null;
 
 export function initRayfinClient(
   config: RayfinClientConfig
-): RayfinClient<TodoAppSchema, AppFunctionsSchema> {
+): RayfinClient<TodoAppSchema> {
   if (client) {
     throw new Error('Rayfin client is already initialized.');
   }
-  client = new RayfinClient<TodoAppSchema, AppFunctionsSchema>({
+  client = new RayfinClient<TodoAppSchema>({
     baseUrl: config.baseUrl,
     publishableKey: config.publishableKey,
     useProxy: false,
@@ -25,7 +24,7 @@ export function initRayfinClient(
   return client;
 }
 
-export function getRayfinClient(): RayfinClient<TodoAppSchema, AppFunctionsSchema> {
+export function getRayfinClient(): RayfinClient<TodoAppSchema> {
   if (!client) {
     throw new Error(
       'Rayfin client not initialized. Call bootstrapAuth() first.'
@@ -33,8 +32,3 @@ export function getRayfinClient(): RayfinClient<TodoAppSchema, AppFunctionsSchem
   }
   return client;
 }
-
-export const rayfinClient = {
-  init: initRayfinClient,
-  get: getRayfinClient,
-};

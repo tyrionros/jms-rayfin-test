@@ -49,7 +49,7 @@ udf.func(
     try {
       console.log('[AI Chat Function] Calling endpoint:', endpoint);
       
-      // Call Azure AI Foundry API
+      // Call Azure AI Foundry API using fetch
       const response = await fetch(`${endpoint}/chat/completions`, {
         method: 'POST',
         headers: {
