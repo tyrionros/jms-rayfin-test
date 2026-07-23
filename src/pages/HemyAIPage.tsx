@@ -96,13 +96,14 @@ export function HemyAIPage() {
       // User identity passed via headers for agent personalization and audit
       console.log('[HemyAI] Calling Azure AI Foundry agent...');
       
-      const endpoint = 'https://hemy-ai.services.ai.azure.com/api/projects/hemy-ai/agents/Hemy-AI-Foundry/endpoint/protocols/openai/responses';
-      
+      //const endpoint = 'https://hemy-ai.services.ai.azure.com/api/projects/hemy-ai/agents/Hemy-AI-Foundry/endpoint/protocols/openai/responses';
+      const endpoint = 'https://hemy-ai.openai.azure.com/openai/v1'      
+
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'api-version': '2024-08-01-preview', // Azure AI Foundry API version
+          'api-version': '2026-07-09', // Azure AI Foundry API version
           'X-Rayfin-User-Id': user.id, // Rayfin authenticated user context
           'X-Rayfin-User-Email': user.email, // For agent personalization
           'X-Rayfin-User-Name': user.name || 'User', // Additional context
