@@ -7,6 +7,7 @@ import { FloatingFeedbackButton } from '@/components/FloatingFeedbackButton';
 import { Sidebar } from '@/components/Sidebar';
 import { useAuth } from '@/hooks/AuthContext';
 import { HomePage } from '@/pages/HomePage';
+import { HemyAIPage } from '@/pages/HemyAIPage';
 import { HemyXPage } from '@/pages/HemyXPage';
 import { HemyProjectsPage } from '@/pages/HemyProjectsPage';
 import { HemyReportsPage } from '@/pages/HemyReportsPage';
@@ -70,6 +71,7 @@ function App() {
                   <Sidebar onLogout={handleLogout} onNavigate={handleNavigate} user={user} />
                   <div className="flex-1 ml-20">
                     {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
+                    {currentPage === 'hemyai' && <HemyAIPage />}
                     {currentPage === 'omniverse' && <WebRTCStreamPage />}
                     {currentPage === 'hemlivedata' && <HemyLiveDataPage />}
                     {currentPage === 'hemyx' && <HemyXPage />}
