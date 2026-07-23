@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => {
         process.env.VITE_AZURE_AI_FOUNDRY_ENDPOINT ||
         env.AZURE_AI_FOUNDRY_ENDPOINT ||
         env.VITE_AZURE_AI_FOUNDRY_ENDPOINT ||
-        ''
+        'https://hemy-ai.services.ai.azure.com/api/projects/hemy-ai/agents/Hemy-AI-Foundry/endpoint/protocols/openai/responses'
       ),
     },
 

@@ -4,6 +4,7 @@ import { SendRegular, DismissRegular } from '@fluentui/react-icons';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { msalInstance } from '@/services/msalConfig';
 
 interface TableData {
   headers: string[];
@@ -26,6 +27,9 @@ interface Message {
   chart?: ChartData;
 }
 
+// AI Foundry agent endpoint using OpenAI protocol
+const AI_AGENT_ENDPOINT = 'https://hemy-ai.services.ai.azure.com/api/projects/hemy-ai/agents/Hemy-AI-Foundry/endpoint/protocols/openai/responses';
+
 export function HemyAIPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -47,6 +51,29 @@ export function HemyAIPage() {
     scrollToBottom();
   }, [messages]);
 
+  const getAccessToken = async (): Promise<string> => {
+    const accounts = msalInstance.getAllAccounts();
+    const targetAccount = msalInstance.getActiveAccount() || accounts[0];
+
+    if (!targetAccount) {
+      throw new Error('No authenticated user found');
+    }
+
+    const tokenRequest = {
+      scopes: ['https://api.fabric.microsoft.com/.default'],
+      account: targetAccount,
+    };
+
+    try {
+      const response = await msalInstance.acquireTokenSilent(tokenRequest);
+      console.log('[HemyAI] Token acquired successfully');
+      return response.accessToken;
+    } catch (error) {
+      console.error('[HemyAI] Token acquisition failed:', error);
+      throw new Error('Failed to acquire authentication token');
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!input.trim()) return;
 
@@ -62,32 +89,41 @@ export function HemyAIPage() {
     setIsLoading(true);
 
     try {
-      const endpoint = import.meta.env.VITE_AI_FOUNDRY_ENDPOINT;
-      const apiKey = import.meta.env.VITE_AI_FOUNDRY_API_KEY;
+      // Get user's authentication token
+      const accessToken = await getAccessToken();
 
-      if (!endpoint || !apiKey) {
-        throw new Error('AI Foundry credentials not configured. Check /rayfin/.env');
-      }
-
-      const response = await fetch(`${endpoint}/chat/completions`, {
+      // Call the AI Foundry agent endpoint with OpenAI protocol
+      const response = await fetch(AI_AGENT_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'api-key': apiKey,
+          'Authorization': `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
-          messages: [{ role: 'user', content: userMessage.content }],
+          messages: messages.map((msg) => ({
+            role: msg.role,
+            content: msg.content,
+          })),
           max_tokens: 1024,
           temperature: 0.7,
         }),
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[HemyAI] API error:', response.status, errorText);
         throw new Error(`API error: ${response.status}`);
       }
 
       const data = await response.json();
-      const content = data.choices?.[0]?.message?.content || data.content || '';
+      console.log('[HemyAI] Response received:', data);
+
+      // Parse OpenAI protocol response
+      const content = 
+        data.choices?.[0]?.message?.content ||
+        data.content ||
+        data.text ||
+        'No response from AI';
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -106,7 +142,7 @@ export function HemyAIPage() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `❌ **Error**: ${error instanceof Error ? error.message : 'Failed to reach AI Foundry'}\n\n**Setup required:**\n1. Ensure \`/rayfin/.env\` has valid credentials\n2. Rebuild with \`npm run build\``,
+        content: `❌ **Error**: ${error instanceof Error ? error.message : 'Failed to reach Hemy AI'}\n\n**Check:**\n- You are logged in\n- Network connection is stable\n- Hemy AI agent endpoint is available`,
         timestamp: new Date(),
       };
       
