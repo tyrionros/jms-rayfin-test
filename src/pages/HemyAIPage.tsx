@@ -23,13 +23,14 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  responseId?: string; // Track Azure Responses API response ID for multi-turn
   table?: TableData;
   chart?: ChartData;
 }
 
-// AI Foundry agent endpoint using OpenAI protocol
-const AI_AGENT_ENDPOINT = 'https://hemy-ai.services.ai.azure.com/api/projects/hemy-ai/agents/Hemy-AI-Foundry/endpoint/protocols/openai/responses';
-const AI_API_VERSION = '1.0.0';
+// Azure AI Foundry Responses API configuration
+const AZURE_AI_ENDPOINT = import.meta.env.VITE_AZURE_AI_FOUNDRY_ENDPOINT;
+const AZURE_AI_API_KEY = import.meta.env.VITE_AZURE_AI_FOUNDRY_API_KEY;
 
 export function HemyAIPage() {
   const { user, isAuthenticated } = useAuth(); // Use Rayfin's authenticated user
@@ -67,6 +68,17 @@ export function HemyAIPage() {
       return;
     }
 
+    if (!AZURE_AI_ENDPOINT || !AZURE_AI_API_KEY) {
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: '❌ **Configuration Error**: Azure AI Foundry credentials not configured. Please check your environment variables.',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+      return;
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -79,21 +91,26 @@ export function HemyAIPage() {
     setIsLoading(true);
 
     try {
-      // Call the AI Foundry agent endpoint with OpenAI protocol
-      // Using Rayfin's authenticated user context
-      const response = await fetch(AI_AGENT_ENDPOINT, {
+      // Get the previous response ID if available (for multi-turn conversation)
+      const previousResponse = [...messages].reverse().find((msg) => msg.role === 'assistant' && msg.responseId);
+      const previousResponseId = previousResponse?.responseId;
+
+      // Azure AI Foundry Responses API protocol
+      // Uses OpenAI-compatible format but with API Key authentication
+      const url = `${AZURE_AI_ENDPOINT}/api/responses`;
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'api-version': AI_API_VERSION, // Azure AI Foundry agent version
-          'X-User-Id': user.id, // Pass authenticated user context
-          'X-User-Email': user.email, // Pass user email for context
+          'api-key': AZURE_AI_API_KEY, // Azure AI uses api-key header for authentication
+          'api-version': '1.0.0', // Azure AI Foundry responses API version
+          'X-User-Id': user.id, // Pass Rayfin authenticated user for audit
+          'X-User-Email': user.email, // User context for tracing
         },
         body: JSON.stringify({
-          messages: messages.map((msg) => ({
-            role: msg.role,
-            content: msg.content,
-          })),
+          input: input.trim(), // User input message
+          ...(previousResponseId && { previous_response_id: previousResponseId }), // Multi-turn support
           max_tokens: 1024,
           temperature: 0.7,
         }),
@@ -101,18 +118,19 @@ export function HemyAIPage() {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('[HemyAI] API error:', response.status, errorText);
-        throw new Error(`API error: ${response.status}`);
+        console.error('[HemyAI] Azure Responses API error:', response.status, errorText);
+        throw new Error(`Azure API error: ${response.status} - ${errorText.substring(0, 200)}`);
       }
 
       const data = await response.json();
-      console.log('[HemyAI] Response received:', data);
+      console.log('[HemyAI] Azure Response received:', data);
 
-      // Parse OpenAI protocol response
+      // Parse Azure Responses API response format
       const content = 
-        data.choices?.[0]?.message?.content ||
+        data.output_text || // Standard Azure Responses API format
+        data.choices?.[0]?.message?.content || // Fallback to OpenAI format
         data.content ||
-        data.text ||
+        data.reply ||
         'No response from AI';
       
       const assistantMessage: Message = {
@@ -120,6 +138,7 @@ export function HemyAIPage() {
         role: 'assistant',
         content,
         timestamp: new Date(),
+        responseId: data.id, // Track response ID for multi-turn conversations
         table: data.table,
         chart: data.chart,
       };
@@ -127,12 +146,12 @@ export function HemyAIPage() {
       setMessages((prev) => [...prev, assistantMessage]);
       setIsLoading(false);
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('[HemyAI] Error:', error);
       
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `❌ **Error**: ${error instanceof Error ? error.message : 'Failed to reach Hemy AI'}\n\n**Check:**\n- You are logged in\n- Network connection is stable\n- Hemy AI agent endpoint is available`,
+        content: `❌ **Error**: ${error instanceof Error ? error.message : 'Failed to reach Hemy AI'}\n\n**Check:**\n- Azure AI Foundry endpoint is configured\n- API key is valid and not expired\n- Network connection is stable\n- Agent endpoint is available`,
         timestamp: new Date(),
       };
       
