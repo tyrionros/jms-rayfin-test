@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
-import { MsalAuthWrapper } from '@/components/MsalAuthWrapper';
 import { AuthPage } from '@/components/AuthPage';
 import { FloatingFeedbackButton } from '@/components/FloatingFeedbackButton';
 import { Sidebar } from '@/components/Sidebar';
@@ -66,23 +65,21 @@ function App() {
           path="/"
           element={
             <AuthGuard requireAuth={true}>
-              <MsalAuthWrapper>
-                <div className="flex">
-                  <Sidebar onLogout={handleLogout} onNavigate={handleNavigate} user={user} />
-                  <div className="flex-1 ml-20">
-                    {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
-                    {currentPage === 'hemyai' && <HemyAIPage />}
-                    {currentPage === 'omniverse' && <WebRTCStreamPage />}
-                    {currentPage === 'hemlivedata' && <HemyLiveDataPage />}
-                    {currentPage === 'hemyx' && <HemyXPage />}
-                    {currentPage === 'hemyprojects' && <HemyProjectsPage />}
-                    {currentPage === 'hemyreports' && <HemyReportsPage />}
-                    {currentPage === 'hemydata' && <HemyDataPage />}
-                    {currentPage === 'myaction' && <MyActionPage />}
-                  </div>
+              <div className="flex">
+                <Sidebar onLogout={handleLogout} onNavigate={handleNavigate} user={user} />
+                <div className="flex-1 ml-20">
+                  {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
+                  {currentPage === 'hemyai' && <HemyAIPage />}
+                  {currentPage === 'omniverse' && <WebRTCStreamPage />}
+                  {currentPage === 'hemlivedata' && <HemyLiveDataPage />}
+                  {currentPage === 'hemyx' && <HemyXPage />}
+                  {currentPage === 'hemyprojects' && <HemyProjectsPage />}
+                  {currentPage === 'hemyreports' && <HemyReportsPage />}
+                  {currentPage === 'hemydata' && <HemyDataPage />}
+                  {currentPage === 'myaction' && <MyActionPage />}
                 </div>
-                <FloatingFeedbackButton user={user} currentPageName="Hemy 360 - test by JMS" />
-              </MsalAuthWrapper>
+              </div>
+              <FloatingFeedbackButton user={user} currentPageName="Hemy 360 - test by JMS" />
             </AuthGuard>
           }
         />

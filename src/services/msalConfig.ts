@@ -1,4 +1,4 @@
-import { Configuration, PublicClientApplication, LogLevel } from '@azure/msal-browser';
+import { Configuration, LogLevel } from '@azure/msal-browser';
 
 // Dynamically determine redirect URI based on window context
 const getRedirectUri = () => {
@@ -28,5 +28,3 @@ export const msalConfig: Configuration = {
     },
   },
 };
-
-export const msalInstance = new PublicClientApplication(msalConfig);

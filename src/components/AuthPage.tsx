@@ -1,7 +1,6 @@
 import { useState } from 'react';
-
+import { useMsal } from '@azure/msal-react';
 import { useAuth } from '@/hooks/AuthContext';
-import { msalInstance } from '@/services/msalConfig';
 
 const msLogo = (
   <svg
@@ -20,6 +19,7 @@ const msLogo = (
 
 export function AuthPage() {
   const { signIn, fabricAuthEnabled } = useAuth();
+  const { instance: msalInstance } = useMsal(); // Use MSAL from context (initialized in main.tsx)
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,18 +28,21 @@ export function AuthPage() {
     setIsLoading(true);
 
     try {
-      // First, initiate MSAL login for Fabric API access
+      // MSAL is already initialized in main.tsx, just attempt silent token acquisition
       const loginRequest = {
-        scopes: ['https://analysis.windows.net/powerbi/api/Report.Read.All'],
+        scopes: ['https://api.fabric.microsoft.com/.default'],
       };
       try {
-        //await msalInstance.loginPopup(loginRequest);
-        await msalInstance.initialize();
-        await msalInstance.handleRedirectPromise();
-        await msalInstance.acquireTokenSilent(loginRequest);
-        console.log('[AuthPage] MSAL login successful');
+        // MSAL is already initialized, just acquire token
+        const redirectResult = await msalInstance.handleRedirectPromise();
+        if (redirectResult?.accessToken) {
+          console.log('[AuthPage] Token acquired from redirect');
+        } else {
+          await msalInstance.acquireTokenSilent(loginRequest);
+        }
+        console.log('[AuthPage] MSAL token acquisition successful');
       } catch (msalErr) {
-        console.warn('[AuthPage] MSAL login failed, continuing with Rayfin auth:', msalErr);
+        console.warn('[AuthPage] MSAL silent token failed, continuing with Rayfin auth:', msalErr);
         // Continue even if MSAL fails - Rayfin auth is primary
       }
 

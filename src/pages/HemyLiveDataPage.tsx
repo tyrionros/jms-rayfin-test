@@ -7,11 +7,10 @@ import {
 } from '@microsoft/fabric-embed';
 import { useMsal } from '@azure/msal-react';
 import { useAuth } from '@/hooks/AuthContext';
-import { msalInstance } from '@/services/msalConfig';
 
 export function HemyLiveDataPage({ onNavigate }: { onNavigate?: (pageId: string) => void }) {
   const { user } = useAuth();
-  const { instance } = useMsal();
+  const { instance: msalInstance } = useMsal(); // Use MSAL from context (initialized in main.tsx)
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [msalNeedsAuth, setMsalNeedsAuth] = useState(false);
@@ -40,9 +39,7 @@ export function HemyLiveDataPage({ onNavigate }: { onNavigate?: (pageId: string)
     try {
       setIsLoading(true);
       setError(null);
-      await msalInstance.initialize();
-      
-      // Using redirect instead of popup to support iframe environments cleanly
+      // MSAL is already initialized in main.tsx, just trigger login redirect
       await msalInstance.loginRedirect({
         scopes: ['https://api.fabric.microsoft.com/.default'],
         loginHint: msalInstance.getAllAccounts()[0]?.username || undefined
@@ -65,16 +62,8 @@ export function HemyLiveDataPage({ onNavigate }: { onNavigate?: (pageId: string)
 
         setIsLoading(true);
 
-        await msalInstance.initialize();
-        console.log('[HemyLiveDataPage] MSAL initialized');
-
-        // This resolves the token extraction after a redirect landing completes
-        const redirectResult = await msalInstance.handleRedirectPromise();
-        console.log('[HemyLiveDataPage] MSAL redirect promise handled');
-
-        if (redirectResult && redirectResult.account) {
-          msalInstance.setActiveAccount(redirectResult.account);
-        }
+        // MSAL is already initialized in main.tsx, no need to initialize again
+        console.log('[HemyLiveDataPage] Using pre-initialized MSAL instance');
 
         let currentAccounts = msalInstance.getAllAccounts();
         console.log(`[HemyLiveDataPage] Found ${currentAccounts.length} accounts in MSAL`);
@@ -174,7 +163,7 @@ export function HemyLiveDataPage({ onNavigate }: { onNavigate?: (pageId: string)
         }
       }
     };
-  }, [user, instance]);
+  }, [user, msalInstance]);
 
   return (
     <div className="flex flex-col h-screen bg-[#FAF8F2]">

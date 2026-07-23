@@ -4,7 +4,7 @@ import { SendRegular, DismissRegular } from '@fluentui/react-icons';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { msalInstance } from '@/services/msalConfig';
+import { useMsal } from '@azure/msal-react';
 
 interface TableData {
   headers: string[];
@@ -31,6 +31,7 @@ interface Message {
 const AI_AGENT_ENDPOINT = 'https://hemy-ai.services.ai.azure.com/api/projects/hemy-ai/agents/Hemy-AI-Foundry/endpoint/protocols/openai/responses';
 
 export function HemyAIPage() {
+  const { instance: msalInstance } = useMsal(); // Use MSAL from context (initialized in main.tsx)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
