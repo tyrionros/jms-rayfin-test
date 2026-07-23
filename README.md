@@ -37,6 +37,7 @@ npm run rayfin:up  # Deploy to Fabric (runs automatic build + deploy)
 │   │   └── MsalAuthWrapper.tsx # Route-level MSAL redirect handler
 │   ├── pages/
 │   │   ├── HemyLiveDataPage.tsx  # Fabric KQL Dashboard embed + MSAL token provider
+│   │   ├── HemyAIPage.tsx        # AI chat with Azure AI Foundry integration
 │   │   ├── HemyXPage.tsx         # Dynamics 365 CRM Page in iframe
 │   │   ├── HemyDataPage.tsx      # Dummy page for Dynamics 365 Hemy Data page in iframe
 │   │   ├── HemyProjectsPage.tsx  # Dynamics 365 Projects page in iframe
@@ -72,6 +73,32 @@ npm run rayfin:up  # Deploy to Fabric (runs automatic build + deploy)
 - Real-time capacity metrics and live data queries
 - Custom theme applied to embedded dashboard
 
+### 🤖 Hemy AI Chat
+- **HemyAIPage** provides an interactive AI chat interface powered by Azure AI Foundry
+- Rich response support: markdown formatting, tables, and interactive charts (bar/line/pie)
+- Built with Fluent UI components for Microsoft ecosystem consistency
+- Messages with timestamps and loading states
+
+#### Azure AI Foundry Setup
+To enable the Hemy AI chat, configure Azure AI Foundry credentials in `/rayfin/.env`:
+
+```bash
+# /rayfin/.env
+VITE_AI_FOUNDRY_ENDPOINT=https://YOUR-PROJECT.services.ai.azure.com/api/projects/YOUR-PROJECT
+VITE_AI_FOUNDRY_API_KEY=your-api-key-here
+```
+
+These credentials are:
+- **Build-time secret**: Embedded into the app during build (visible in frontend)
+- **Future improvement**: Once Fabric supports Python Rayfin Functions, these will be server-side secrets
+
+**Steps to get credentials:**
+1. Go to [Azure AI Foundry](https://ai.azure.com)
+2. Create or open a project
+3. Copy the **Project endpoint** (e.g., `https://hemy-ai.services.ai.azure.com/api/projects/hemy-ai`)
+4. Create an **API key** in Settings → Keys and Endpoints
+5. Set both in `/rayfin/.env` before building
+
 ### 🔐 Authentication
 - **MSAL** (Azure AD) integration via `@azure/msal-browser` and `@azure/msal-react`
 - **Automatic token acquisition** with Fabric API scope (`https://api.fabric.microsoft.com/.default`)
@@ -87,6 +114,8 @@ npm run rayfin:up  # Deploy to Fabric (runs automatic build + deploy)
 
 ## Recent Updates
 
+- ✅ Added **Hemy AI chat page** with rich data visualization (tables, charts, markdown)
+- ✅ Integrated **Azure AI Foundry** for intelligent chat responses
 - ✅ Fixed MSAL token scope: switched from `Report.Read.All` to `https://api.fabric.microsoft.com/.default`
 - ✅ Added reload button in header to clear MSAL cache and request fresh token
 - ✅ Implemented proper error handling for token acquisition failures
