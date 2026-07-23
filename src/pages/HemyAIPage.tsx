@@ -4,6 +4,7 @@ import { SendRegular, DismissRegular } from '@fluentui/react-icons';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { callAIFoundryAPI } from '@/services/aiService';
 
 interface TableData {
   headers: string[];
@@ -62,61 +63,30 @@ export function HemyAIPage() {
     setIsLoading(true);
 
     try {
-      // TODO: Replace with actual Azure AI Foundry API call
-      // The AI response can include:
-      // - Plain text or markdown
-      // - JSON with table data: { type: "table", headers: [...], rows: [...] }
-      // - JSON with chart data: { type: "chart", chartType: "bar|line|pie", data: [...] }
+      const response = await callAIFoundryAPI(userMessage.content);
+      
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: response.content,
+        timestamp: new Date(),
+        table: response.table,
+        chart: response.chart,
+      };
 
-      // For now, simulate various response types
-      setTimeout(() => {
-        let assistantMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: '',
-          timestamp: new Date(),
-        };
-
-        const responseType = Math.floor(Math.random() * 3);
-        
-        if (responseType === 0) {
-          // Text response with markdown
-          assistantMessage.content = `## Analysis Results\n\nYou asked: "${userMessage.content}"\n\nHere's a **formatted response** with:\n- Bullet points\n- *Italics* and **bold**\n- \`Code blocks\`\n\nConnect to Azure AI Foundry to get real data-driven responses.`;
-        } else if (responseType === 1) {
-          // Table response
-          assistantMessage.content = 'Here are the results in table format:';
-          assistantMessage.table = {
-            headers: ['Month', 'Revenue', 'Customers', 'Growth %'],
-            rows: [
-              ['January', 45000, 120, 5.2],
-              ['February', 52000, 145, 15.6],
-              ['March', 61000, 168, 17.3],
-              ['April', 58000, 162, -4.9],
-              ['May', 71000, 189, 22.4],
-            ],
-          };
-        } else {
-          // Chart response
-          assistantMessage.content = 'Here\'s your data visualized as a chart:';
-          assistantMessage.chart = {
-            type: 'bar',
-            data: [
-              { month: 'Jan', value: 45, target: 50 },
-              { month: 'Feb', value: 52, target: 50 },
-              { month: 'Mar', value: 61, target: 60 },
-              { month: 'Apr', value: 58, target: 60 },
-              { month: 'May', value: 71, target: 70 },
-            ],
-            dataKey: 'value',
-            xAxisKey: 'month',
-          };
-        }
-
-        setMessages((prev) => [...prev, assistantMessage]);
-        setIsLoading(false);
-      }, 1000);
+      setMessages((prev) => [...prev, assistantMessage]);
+      setIsLoading(false);
     } catch (error) {
       console.error('Error sending message:', error);
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: `❌ **Error**: ${error instanceof Error ? error.message : 'Failed to get response from AI Foundry'}\n\nMake sure:\n- \`VITE_AI_FOUNDRY_ENDPOINT\` is set in \`.env.local\`\n- \`VITE_AI_FOUNDRY_API_KEY\` is configured\n- The API endpoint is accessible`,
+        timestamp: new Date(),
+      };
+      
+      setMessages((prev) => [...prev, errorMessage]);
       setIsLoading(false);
     }
   };
