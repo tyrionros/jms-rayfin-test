@@ -4,7 +4,6 @@ import { SendRegular, DismissRegular } from '@fluentui/react-icons';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { callAIFoundryAPI } from '@/services/aiService';
 
 interface TableData {
   headers: string[];
@@ -63,15 +62,38 @@ export function HemyAIPage() {
     setIsLoading(true);
 
     try {
-      const response = await callAIFoundryAPI(userMessage.content);
+      const endpoint = import.meta.env.VITE_AI_FOUNDRY_ENDPOINT;
+      const apiKey = import.meta.env.VITE_AI_FOUNDRY_API_KEY;
+
+      if (!endpoint || !apiKey) {
+        throw new Error('AI Foundry not configured');
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: userMessage.content }],
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content || data.content || '';
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: response.content,
+        content,
         timestamp: new Date(),
-        table: response.table,
-        chart: response.chart,
+        table: data.table,
+        chart: data.chart,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -82,7 +104,7 @@ export function HemyAIPage() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `❌ **Error**: ${error instanceof Error ? error.message : 'Failed to get response from AI Foundry'}\n\nMake sure:\n- \`VITE_AI_FOUNDRY_ENDPOINT\` is set in \`.env.local\`\n- \`VITE_AI_FOUNDRY_API_KEY\` is configured\n- The API endpoint is accessible`,
+        content: `❌ **Error**: ${error instanceof Error ? error.message : 'Failed to reach AI Foundry'}\n\n**Setup required:**\n1. Edit \`/rayfin/.env\`\n2. Set \`VITE_AI_FOUNDRY_ENDPOINT\`\n3. Set \`VITE_AI_FOUNDRY_API_KEY\`\n4. Run \`npm run build\``,
         timestamp: new Date(),
       };
       
