@@ -74,30 +74,30 @@ npm run rayfin:up  # Deploy to Fabric (runs automatic build + deploy)
 - Custom theme applied to embedded dashboard
 
 ### 🤖 Hemy AI Chat
-- **HemyAIPage** provides an interactive AI chat interface powered by Azure AI Foundry
+- **HemyAIPage** provides an interactive AI chat interface powered by Azure AI Foundry agent
 - Rich response support: markdown formatting, tables, and interactive charts (bar/line/pie)
 - Built with Fluent UI components for Microsoft ecosystem consistency
 - Messages with timestamps and loading states
+- **Authentication**: Uses logged-in user's MSAL token (no separate API key needed)
 
-#### Azure AI Foundry Setup
-To enable the Hemy AI chat, configure Azure AI Foundry credentials in `/rayfin/.env`:
+#### How it works
+The Hemy AI chat connects to a dedicated Azure AI Foundry agent endpoint using the currently authenticated user's token:
 
-```bash
-# /rayfin/.env
-VITE_AI_FOUNDRY_ENDPOINT=https://YOUR-PROJECT.services.ai.azure.com/api/projects/YOUR-PROJECT
-VITE_AI_FOUNDRY_API_KEY=your-api-key-here
+```
+https://hemy-ai.services.ai.azure.com/api/projects/hemy-ai/agents/Hemy-AI-Foundry/endpoint/protocols/openai/responses
 ```
 
-These credentials are:
-- **Build-time secret**: Embedded into the app during build (visible in frontend)
-- **Future improvement**: Once Fabric supports Python Rayfin Functions, these will be server-side secrets
+**Authentication flow:**
+1. User is already logged in via MSAL (Rayfin + Fabric integration)
+2. When sending a message, the app acquires a token silently from MSAL
+3. Token is sent as `Authorization: Bearer <token>` to the agent endpoint
+4. Agent responds with OpenAI protocol format (choices → message → content)
 
-**Steps to get credentials:**
-1. Go to [Azure AI Foundry](https://ai.azure.com)
-2. Create or open a project
-3. Copy the **Project endpoint** (e.g., `https://hemy-ai.services.ai.azure.com/api/projects/hemy-ai`)
-4. Create an **API key** in Settings → Keys and Endpoints
-5. Set both in `/rayfin/.env` before building
+**Benefits:**
+- ✅ No separate API keys needed
+- ✅ Uses user's identity for audit/compliance
+- ✅ Leverages existing Fabric authentication
+- ✅ Secure token exchange (token refreshed automatically)
 
 ### 🔐 Authentication
 - **MSAL** (Azure AD) integration via `@azure/msal-browser` and `@azure/msal-react`
@@ -114,8 +114,10 @@ These credentials are:
 
 ## Recent Updates
 
+- ✅ **Refactored Hemy AI to use user authentication** — Now uses MSAL token instead of API key
+- ✅ **Connected to Hemy AI agent endpoint** — Direct integration with Azure AI Foundry agent
+- ✅ **OpenAI protocol support** — Full conversation history sent with each message
 - ✅ Added **Hemy AI chat page** with rich data visualization (tables, charts, markdown)
-- ✅ Integrated **Azure AI Foundry** for intelligent chat responses
 - ✅ Fixed MSAL token scope: switched from `Report.Read.All` to `https://api.fabric.microsoft.com/.default`
 - ✅ Added reload button in header to clear MSAL cache and request fresh token
 - ✅ Implemented proper error handling for token acquisition failures
