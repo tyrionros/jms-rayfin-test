@@ -4,6 +4,7 @@ import { SendRegular, DismissRegular } from '@fluentui/react-icons';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { getRayfinClient } from '@/services/rayfinClient';
 
 interface TableData {
   headers: string[];
@@ -62,38 +63,19 @@ export function HemyAIPage() {
     setIsLoading(true);
 
     try {
-      const endpoint = import.meta.env.VITE_AI_FOUNDRY_ENDPOINT;
-      const apiKey = import.meta.env.VITE_AI_FOUNDRY_API_KEY;
-
-      if (!endpoint || !apiKey) {
-        throw new Error('AI Foundry not configured');
-      }
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          messages: [{ role: 'user', content: userMessage.content }],
-        }),
+      // Get the Rayfin client instance and call the chatWithAI function
+      const client = getRayfinClient();
+      const response = await client.functions.chatWithAI.invoke({
+        userMessage: userMessage.content,
       });
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const content = data.choices?.[0]?.message?.content || data.content || '';
-      
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content,
+        content: response.content,
         timestamp: new Date(),
-        table: data.table,
-        chart: data.chart,
+        table: response.table,
+        chart: response.chart,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -104,7 +86,7 @@ export function HemyAIPage() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `❌ **Error**: ${error instanceof Error ? error.message : 'Failed to reach AI Foundry'}\n\n**Setup required:**\n1. Edit \`/rayfin/.env\`\n2. Set \`VITE_AI_FOUNDRY_ENDPOINT\`\n3. Set \`VITE_AI_FOUNDRY_API_KEY\`\n4. Run \`npm run build\``,
+        content: `❌ **Error**: ${error instanceof Error ? error.message : 'Failed to reach AI'}\n\n**Check:**\n- Rayfin functions are deployed\n- \`/rayfin/.env\` has valid credentials\n- Server has network access to AI Foundry`,
         timestamp: new Date(),
       };
       
