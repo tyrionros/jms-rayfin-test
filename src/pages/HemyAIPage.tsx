@@ -1,21 +1,29 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  Button,
-  Input,
-  Card,
-  Body1,
-  Caption1,
-} from '@fluentui/react-components';
-import {
-  SendRegular,
-  DismissRegular,
-} from '@fluentui/react-icons';
+import { Button, Input, Card, Caption1 } from '@fluentui/react-components';
+import { SendRegular, DismissRegular } from '@fluentui/react-icons';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
+interface TableData {
+  headers: string[];
+  rows: (string | number)[][];
+}
+
+interface ChartData {
+  type: 'line' | 'bar' | 'pie';
+  data: Record<string, any>[];
+  dataKey?: string;
+  xAxisKey?: string;
+}
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  table?: TableData;
+  chart?: ChartData;
 }
 
 export function HemyAIPage() {
@@ -23,7 +31,7 @@ export function HemyAIPage() {
     {
       id: '1',
       role: 'assistant',
-      content: 'Hello! I\'m Hemy AI. How can I help you today?',
+      content: '# Welcome to Hemy AI\n\nI can help you with:\n- **Data Analysis** — Query and visualize your metrics\n- **Insights** — Get AI-powered recommendations\n- **Reports** — Generate tables and charts\n\nTry asking me about your data!',
       timestamp: new Date(),
     },
   ]);
@@ -55,22 +63,55 @@ export function HemyAIPage() {
 
     try {
       // TODO: Replace with actual Azure AI Foundry API call
-      // Example:
-      // const response = await fetch('/api/chat', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ message: userMessage.content }),
-      // });
-      // const data = await response.json();
+      // The AI response can include:
+      // - Plain text or markdown
+      // - JSON with table data: { type: "table", headers: [...], rows: [...] }
+      // - JSON with chart data: { type: "chart", chartType: "bar|line|pie", data: [...] }
 
-      // For now, simulate a response
+      // For now, simulate various response types
       setTimeout(() => {
-        const assistantMessage: Message = {
+        let assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: `You said: "${userMessage.content}". This is a placeholder response. Connect to Azure AI Foundry to get real AI responses.`,
+          content: '',
           timestamp: new Date(),
         };
+
+        const responseType = Math.floor(Math.random() * 3);
+        
+        if (responseType === 0) {
+          // Text response with markdown
+          assistantMessage.content = `## Analysis Results\n\nYou asked: "${userMessage.content}"\n\nHere's a **formatted response** with:\n- Bullet points\n- *Italics* and **bold**\n- \`Code blocks\`\n\nConnect to Azure AI Foundry to get real data-driven responses.`;
+        } else if (responseType === 1) {
+          // Table response
+          assistantMessage.content = 'Here are the results in table format:';
+          assistantMessage.table = {
+            headers: ['Month', 'Revenue', 'Customers', 'Growth %'],
+            rows: [
+              ['January', 45000, 120, 5.2],
+              ['February', 52000, 145, 15.6],
+              ['March', 61000, 168, 17.3],
+              ['April', 58000, 162, -4.9],
+              ['May', 71000, 189, 22.4],
+            ],
+          };
+        } else {
+          // Chart response
+          assistantMessage.content = 'Here\'s your data visualized as a chart:';
+          assistantMessage.chart = {
+            type: 'bar',
+            data: [
+              { month: 'Jan', value: 45, target: 50 },
+              { month: 'Feb', value: 52, target: 50 },
+              { month: 'Mar', value: 61, target: 60 },
+              { month: 'Apr', value: 58, target: 60 },
+              { month: 'May', value: 71, target: 70 },
+            ],
+            dataKey: 'value',
+            xAxisKey: 'month',
+          };
+        }
+
         setMessages((prev) => [...prev, assistantMessage]);
         setIsLoading(false);
       }, 1000);
@@ -85,7 +126,7 @@ export function HemyAIPage() {
       {
         id: '1',
         role: 'assistant',
-        content: 'Hello! I\'m Hemy AI. How can I help you today?',
+        content: '# Welcome to Hemy AI\n\nI can help you with:\n- **Data Analysis** — Query and visualize your metrics\n- **Insights** — Get AI-powered recommendations\n- **Reports** — Generate tables and charts\n\nTry asking me about your data!',
         timestamp: new Date(),
       },
     ]);
@@ -123,20 +164,106 @@ export function HemyAIPage() {
               message.role === 'user' ? 'justify-end' : 'justify-start'
             }`}
           >
-            <Card
-              className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
-                message.role === 'user'
-                  ? 'bg-[#021838] text-[#FAF8F2]'
-                  : 'bg-white text-[#021838] border border-[#DDD4C0]'
-              }`}
-            >
-              <Body1>{message.content}</Body1>
-              <Caption1 className={`mt-2 ${
-                message.role === 'user' ? 'text-[#FAF8F2]/70' : 'text-[#666]'
-              }`}>
-                {message.timestamp.toLocaleTimeString()}
-              </Caption1>
-            </Card>
+            <div className={`max-w-2xl ${message.role === 'user' ? 'max-w-xs' : ''}`}>
+              <Card
+                className={`px-4 py-3 rounded-lg ${
+                  message.role === 'user'
+                    ? 'bg-[#021838] text-[#FAF8F2]'
+                    : 'bg-white text-[#021838] border border-[#DDD4C0]'
+                }`}
+              >
+                <div className="prose prose-sm max-w-none text-sm">
+                  <Markdown remarkPlugins={[remarkGfm]}>
+                    {message.content}
+                  </Markdown>
+                </div>
+
+                {/* Table Rendering */}
+                {message.table && (
+                  <div className="mt-4 overflow-x-auto border border-[#DDD4C0] rounded">
+                    <table className="w-full text-sm border-collapse">
+                      <thead className="bg-[#021838] text-[#FAF8F2]">
+                        <tr>
+                          {message.table.headers.map((header, idx) => (
+                            <th key={idx} className="px-4 py-2 text-left font-semibold border-b">
+                              {header}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {message.table.rows.map((row, rowIdx) => (
+                          <tr key={rowIdx} className={rowIdx % 2 === 0 ? 'bg-[#FAF8F2]' : 'bg-white'}>
+                            {row.map((cell, cellIdx) => (
+                              <td key={cellIdx} className="px-4 py-2 border-b border-[#DDD4C0]">
+                                {cell}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* Chart Rendering */}
+                {message.chart && (
+                  <div className="mt-4 w-full h-80 flex justify-center">
+                    {message.chart.type === 'bar' && (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={message.chart.data}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey={message.chart.xAxisKey} />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Bar dataKey={message.chart.dataKey} fill="#7C4D2F" />
+                          <Bar dataKey="target" fill="#DDD4C0" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    )}
+                    {message.chart.type === 'line' && (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={message.chart.data}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey={message.chart.xAxisKey} />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Line type="monotone" dataKey={message.chart.dataKey} stroke="#7C4D2F" strokeWidth={2} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    )}
+                    {message.chart.type === 'pie' && (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={message.chart.data}
+                            dataKey={message.chart.dataKey}
+                            nameKey={message.chart.xAxisKey}
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={80}
+                            label
+                          >
+                            {message.chart.data.map((_, index) => (
+                              <Cell key={`cell-${index}`} fill={['#021838', '#7C4D2F', '#DDD4C0', '#C4956A'][index % 4]} />
+                            ))}
+                          </Pie>
+                          <Tooltip />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    )}
+                  </div>
+                )}
+
+                <Caption1 className={`mt-2 ${
+                  message.role === 'user' ? 'text-[#FAF8F2]/70' : 'text-[#666]'
+                }`}>
+                  {message.timestamp.toLocaleTimeString()}
+                </Caption1>
+              </Card>
+            </div>
           </div>
         ))}
 
