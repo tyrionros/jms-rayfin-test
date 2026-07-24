@@ -1,4 +1,4 @@
-import { Configuration, LogLevel } from '@azure/msal-browser';
+import { Configuration, PopupRequest, LogLevel } from '@azure/msal-browser';
 
 // Dynamically determine redirect URI based on window context
 const getRedirectUri = () => {
@@ -6,7 +6,7 @@ const getRedirectUri = () => {
     // If running locally, matches localhost; otherwise returns the hosted fabricapps.net URL
     return window.location.origin + '/';
   }
-  return 'https://kind-whirl-780273fc10-norwayeast.webapp.fabricapps.net/';
+  return 'https://eager-hedge-47d9e07476-norwayeast.webapp.fabricapps.net/';
 };
 
 export const msalConfig: Configuration = {
@@ -28,3 +28,8 @@ export const msalConfig: Configuration = {
     },
   },
 };
+
+export const loginRequest: PopupRequest = {
+  scopes: ["https://api.fabric.microsoft.com/user_impersonation"],
+};
+
