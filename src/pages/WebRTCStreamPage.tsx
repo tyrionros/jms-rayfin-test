@@ -99,7 +99,7 @@ export function WebRTCStreamPage() {
     <div className="min-h-screen bg-[#FAF8F2] text-[#021838]">
       {/* ── Header ── */}
       <header className="sticky top-0 z-40 border-b border-[#DDD4C0] bg-[#021838] shadow-md">
-        <div className="flex items-center justify-between px-8 py-4">
+        <div className="flex items-center justify-between px-8 py-2">
           <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C4D2F] text-[#FAF8F2]">
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +111,7 @@ export function WebRTCStreamPage() {
                 />
               </svg>
             </span>
-            <span className="text-base font-semibold tracking-tight text-[#FAF8F2]">Nvidia Omniverse Web Viewer</span>
+            <span className="text-sm font-semibold tracking-tight text-[#FAF8F2]">Nvidia Omniverse Web Viewer</span>
           </div>
           <span
             className={`flex h-3 w-3 animate-pulse rounded-full ${

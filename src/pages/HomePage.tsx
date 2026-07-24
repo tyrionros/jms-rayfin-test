@@ -53,12 +53,12 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
     <div className="min-h-screen bg-[#FAF8F2] text-[#021838]">
       {/* ── Header: deep navy bar, cream text ── */}
       <header className="sticky top-0 z-40 border-b border-[#DDD4C0] bg-[#021838] shadow-md">
-        <div className="flex items-center justify-between px-8 py-4">
+        <div className="flex items-center justify-between px-8 py-2">
           <div className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C4D2F] text-[#FAF8F2]">
               <Hemy360Icon className="h-4 w-4" />
             </span>
-            <span className="text-base font-semibold tracking-tight text-[#FAF8F2]" title="Hemy 360 - test by JMS">
+            <span className="text-sm font-semibold tracking-tight text-[#FAF8F2]" title="Hemy 360 - test by JMS">
               Hemy 360
             </span>
           </div>
