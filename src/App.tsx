@@ -9,6 +9,7 @@ import { HomePage } from '@/pages/HomePage';
 import { HemyAIPage } from '@/pages/HemyAIPage';
 import { HemyXPage } from '@/pages/HemyXPage';
 import { HemySalePage } from '@/pages/HemySalePage';
+import { HemyFinancePage } from '@/pages/HemyFinancePage';
 import { HemyProjectsPage } from '@/pages/HemyProjectsPage';
 import { HemyReportsPage } from '@/pages/HemyReportsPage';
 import { HemyDataPage } from '@/pages/HemyDataPage';
@@ -69,16 +70,39 @@ function App() {
               <div className="flex">
                 <Sidebar onLogout={handleLogout} onNavigate={handleNavigate} user={user} />
                 <div className="flex-1 ml-20">
-                  {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
-                  {currentPage === 'hemyai' && <HemyAIPage />}
-                  {currentPage === 'omniverse' && <WebRTCStreamPage />}
-                  {currentPage === 'hemlivedata' && <HemyLiveDataPage />}
-                  {currentPage === 'hemyx' && <HemyXPage />}
-                  {currentPage === 'hemysale' && <HemySalePage />}
-                  {currentPage === 'hemyprojects' && <HemyProjectsPage />}
-                  {currentPage === 'hemyreports' && <HemyReportsPage />}
-                  {currentPage === 'hemydata' && <HemyDataPage />}
-                  {currentPage === 'myaction' && <MyActionPage />}
+                  <div style={{ display: currentPage === 'home' ? 'block' : 'none' }}>
+                   <HomePage onNavigate={handleNavigate} />
+                  </div>
+                  <div style={{ display: currentPage === 'hemyai' ? 'block' : 'none' }}>
+                   <HemyAIPage />
+                  </div>
+                  <div style={{ display: currentPage === 'omniverse' ? 'block' : 'none' }}>
+                   <WebRTCStreamPage />
+                  </div>
+                  <div style={{ display: currentPage === 'hemlivedata' ? 'block' : 'none' }}>
+                   <HemyLiveDataPage />
+                  </div>
+                  <div style={{ display: currentPage === 'hemyx' ? 'block' : 'none' }}>
+                   <HemyXPage />
+                  </div>
+                  <div style={{ display: currentPage === 'hemysale' ? 'block' : 'none' }}>
+                   <HemySalePage />
+                  </div>
+                  <div style={{ display: currentPage === 'hemyfinance' ? 'block' : 'none' }}>
+                   <HemyFinancePage />
+                  </div>
+                  <div style={{ display: currentPage === 'hemyprojects' ? 'block' : 'none' }}>
+                   <HemyProjectsPage />
+                  </div>
+                  <div style={{ display: currentPage === 'hemyreports' ? 'block' : 'none' }}>
+                   <HemyReportsPage />
+                  </div>
+                  <div style={{ display: currentPage === 'hemydata' ? 'block' : 'none' }}>
+                   <HemyDataPage />
+                  </div>
+                  <div style={{ display: currentPage === 'myaction' ? 'block' : 'none' }}>
+                   <MyActionPage />
+                  </div>
                 </div>
               </div>
               <FloatingFeedbackButton user={user} currentPageName="Hemy 360 - test by JMS" />
