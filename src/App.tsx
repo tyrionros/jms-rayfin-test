@@ -10,6 +10,7 @@ import { HemyAIPage } from '@/pages/HemyAIPage';
 import { HemyXPage } from '@/pages/HemyXPage';
 import { HemySalePage } from '@/pages/HemySalePage';
 import { HemyFinancePage } from '@/pages/HemyFinancePage';
+import { HemyOrgSystemArchPage } from '@/pages/HemyOrgSystemArchPage';
 import { HemyProjectsPage } from '@/pages/HemyProjectsPage';
 import { HemyReportsPage } from '@/pages/HemyReportsPage';
 import { HemyDataPage } from '@/pages/HemyDataPage';
@@ -90,6 +91,9 @@ function App() {
                   </div>
                   <div style={{ display: currentPage === 'hemyfinance' ? 'block' : 'none' }}>
                    <HemyFinancePage />
+                  </div>
+                  <div style={{ display: currentPage === 'hemyosarch' ? 'block' : 'none' }}>
+                   <HemyOrgSystemArchPage />
                   </div>
                   <div style={{ display: currentPage === 'hemyprojects' ? 'block' : 'none' }}>
                    <HemyProjectsPage />

@@ -188,6 +188,38 @@ export function Sidebar({ onNavigate, onLogout, user }: SidebarProps) {
       name: 'Hemy Modules',
       icon: icons.modules,
       id: 'hemymodules',
+      submenu: [
+        {
+          name: 'Hemy Fire',
+          icon: icons.modules,
+          id: 'hemyfire',
+        },
+        {
+          name: 'Hemy HSE',
+          icon: icons.modules,
+          id: 'hemyhse',
+        },
+        {
+          name: 'Hemy ESG',
+          icon: icons.modules,
+          id: 'hemyesg',
+        },
+        {
+          name: 'Hemy Documents',
+          icon: icons.modules,
+          id: 'hemydocuments',
+        },
+        {
+          name: 'Hemy - Lease Management',
+          icon: icons.modules,
+          id: 'hemylease',
+        },
+        {
+          name: 'Hemy Organization System Architecture',
+          icon: icons.modules,
+          id: 'hemyosarch',
+        },
+      ],
     },
     {
       name: 'Hemy Connect',
