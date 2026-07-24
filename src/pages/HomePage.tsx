@@ -1,57 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
-
 import { ActionMenu } from '@/components/ActionMenu';
-import {
-  createTodo,
-  deleteTodo,
-  getTodos,
-  updateTodo,
-  type TodoItem,
-} from '@/services/todos';
 
 export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void }) {
-  const [todos, setTodos] = useState<TodoItem[]>([]);
-  const [newTodoTitle, setNewTodoTitle] = useState('');
-  const [loading, setLoading] = useState(true);
-
-  const fetchTodos = useCallback(async () => {
-    const data = await getTodos();
-    setTodos(data);
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    void fetchTodos();
-  }, [fetchTodos]);
-
-  const handleAddTodo = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const title = newTodoTitle.trim();
-    if (!title) return;
-    setNewTodoTitle('');
-    await createTodo(title);
-    await fetchTodos();
-  };
-
-  const handleToggle = async (id: string, isCompleted: boolean) => {
-    await updateTodo(id, { isCompleted: !isCompleted });
-    await fetchTodos();
-  };
-
-  const handleDelete = async (id: string) => {
-    await deleteTodo(id);
-    await fetchTodos();
-  };
-
-  const pending = todos.filter((t) => !t.isCompleted);
-  const completed = todos.filter((t) => t.isCompleted);
-  const progress = todos.length
-    ? Math.round((completed.length / todos.length) * 100)
-    : 0;
-
   return (
     <div className="min-h-screen bg-[#FAF8F2] text-[#021838]">
-      {/* ── Header: deep navy bar, cream text ── */}
+      {/* ── Header ── */}
       <header className="sticky top-0 z-40 border-b border-[#DDD4C0] bg-[#021838] shadow-md">
         <div className="flex items-center justify-between px-8 py-2">
           <div className="flex items-center gap-2.5">
@@ -75,200 +27,178 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-8 py-10">
-        {/* ── Page heading ── */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold tracking-tight text-[#021838]">Your tasks</h1>
-          <p className="mt-1 text-sm text-[#7C4D2F]">
-            {todos.length === 0
-              ? 'Add your first task to get started.'
-              : `${completed.length} of ${todos.length} done`}
-          </p>
-          {todos.length > 0 && (
-            <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-[#DDD4C0]">
-              <div
-                className="h-full rounded-full bg-[#7C4D2F] transition-all duration-300"
-                style={{ width: `${progress}%` }}
-              />
+      <main>
+        {/* ── Hero Section ── */}
+        <section className="relative px-4 py-20 sm:px-6 lg:px-8 xl:py-32">
+          <div className="mx-auto max-w-4xl">
+            {/* Hero Content */}
+            <div className="text-center">
+              {/* Badge */}
+              <div className="mb-8 flex justify-center">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#DDD4C0] bg-white px-4 py-2 text-sm font-medium text-[#7C4D2F]">
+                  <span className="h-2 w-2 rounded-full bg-[#7C4D2F]"></span>
+                  Welcome to Hemy 360
+                </span>
+              </div>
+
+              {/* Main Headline */}
+              <h1 className="mb-6 bg-gradient-to-r from-[#021838] via-[#0D2E5C] to-[#7C4D2F] bg-clip-text text-5xl font-bold tracking-tight text-transparent sm:text-6xl xl:text-7xl">
+                360° Business Intelligence
+              </h1>
+
+              {/* Subheadline */}
+              <p className="mx-auto mb-8 max-w-2xl text-xl text-[#7C4D2F] sm:text-2xl">
+                Comprehensive enterprise solutions for modern organizations. Real-time data, intelligent analytics, and seamless integration.
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+                <button
+                  onClick={() => onNavigate?.('hemyai')}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#021838] px-8 py-4 font-semibold text-[#FAF8F2] shadow-lg transition-all hover:bg-[#0D2E5C] hover:shadow-xl"
+                >
+                  <span>Explore AI Assistant</span>
+                  <ArrowIcon className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => onNavigate?.('hemlivedata')}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#DDD4C0] bg-white px-8 py-4 font-semibold text-[#021838] shadow-md transition-all hover:bg-[#F0EAD8] hover:shadow-lg"
+                >
+                  <span>View Live Data</span>
+                  <ChartIcon className="h-5 w-5" />
+                </button>
+              </div>
             </div>
-          )}
-        </div>
-
-        {/* ── Add task form ── */}
-        <form
-          onSubmit={(e) => void handleAddTodo(e)}
-          className="mb-8 flex gap-2.5"
-        >
-          <input
-            type="text"
-            value={newTodoTitle}
-            onChange={(e) => setNewTodoTitle(e.target.value)}
-            placeholder="What needs to be done?"
-            className="flex-1 rounded-xl border border-[#DDD4C0] bg-white px-4 py-2.5 text-sm text-[#021838] placeholder-[#C4956A] shadow-sm transition-colors focus:border-[#021838] focus:outline-none focus:ring-2 focus:ring-[#021838]/20"
-          />
-          <button
-            type="submit"
-            disabled={!newTodoTitle.trim()}
-            className="rounded-xl bg-[#021838] px-5 py-2.5 text-sm font-semibold text-[#FAF8F2] shadow-sm transition-colors hover:bg-[#0D2E5C] disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            Add
-          </button>
-        </form>
-
-        {/* ── Todo list ── */}
-        {loading ? (
-          <div className="space-y-2.5">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="h-[58px] animate-pulse rounded-xl border border-[#DDD4C0] bg-[#F0EAD8]"
-              />
-            ))}
           </div>
-        ) : todos.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <div className="space-y-8">
-            {pending.length > 0 && (
-              <TodoSection
-                label="To do"
-                count={pending.length}
-                todos={pending}
-                onToggle={handleToggle}
-                onDelete={handleDelete}
-              />
-            )}
-            {completed.length > 0 && (
-              <TodoSection
-                label="Completed"
-                count={completed.length}
-                todos={completed}
-                onToggle={handleToggle}
-                onDelete={handleDelete}
-              />
-            )}
+        </section>
+
+        {/* ── Features Section ── */}
+        <section className="border-t border-[#DDD4C0] bg-white px-4 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-16 text-center">
+              <h2 className="mb-4 text-4xl font-bold text-[#021838] sm:text-5xl">
+                Integrated Business Modules
+              </h2>
+              <p className="text-lg text-[#7C4D2F]">
+                Everything you need to manage your organization in one platform
+              </p>
+            </div>
+
+            {/* Features Grid */}
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {features.map((feature) => (
+                <div
+                  key={feature.id}
+                  onClick={() => onNavigate?.(feature.pageId)}
+                  className="group cursor-pointer rounded-xl border border-[#DDD4C0] bg-[#FAF8F2] p-8 transition-all hover:border-[#7C4D2F] hover:shadow-lg"
+                >
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#021838] text-2xl">
+                    {feature.icon}
+                  </div>
+                  <h3 className="mb-2 text-xl font-semibold text-[#021838]">
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm text-[#7C4D2F]">
+                    {feature.description}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
-        )}
+        </section>
+
+        {/* ── Stats Section ── */}
+        <section className="border-t border-[#DDD4C0] px-4 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-6xl">
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+              {stats.map((stat) => (
+                <div key={stat.label} className="text-center">
+                  <div className="mb-2 text-4xl font-bold text-[#021838] sm:text-5xl">
+                    {stat.value}
+                  </div>
+                  <p className="text-sm text-[#7C4D2F]">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── CTA Section ── */}
+        <section className="border-t border-[#DDD4C0] bg-[#021838] px-4 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="mb-6 text-4xl font-bold text-[#FAF8F2] sm:text-5xl">
+              Ready to Transform Your Business?
+            </h2>
+            <p className="mb-8 text-lg text-[#DDD4C0]">
+              Join organizations worldwide using Hemy 360 to drive growth and efficiency.
+            </p>
+            <button
+              onClick={() => onNavigate?.('hemyai')}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#7C4D2F] px-8 py-4 font-semibold text-[#FAF8F2] shadow-lg transition-all hover:bg-[#9B6240] hover:shadow-xl"
+            >
+              Get Started Today
+              <ArrowIcon className="h-5 w-5" />
+            </button>
+          </div>
+        </section>
       </main>
     </div>
   );
 }
 
-type RowHandlers = {
-  onToggle: (id: string, isCompleted: boolean) => void;
-  onDelete: (id: string) => void;
-};
+const features = [
+  {
+    id: 'ai',
+    pageId: 'hemyai',
+    icon: '🤖',
+    title: 'Hemy AI',
+    description: 'Intelligent assistant powered by Azure AI Foundry for smart insights and automation',
+  },
+  {
+    id: 'data',
+    pageId: 'hemlivedata',
+    icon: '📊',
+    title: 'Live Data & BMS',
+    description: 'Real-time dashboards and KPIs from your Fabric workspace',
+  },
+  {
+    id: 'crm',
+    pageId: 'hemyx',
+    icon: '👥',
+    title: 'Hemy X',
+    description: 'Customer relationship management integrated with Dynamics',
+  },
+  {
+    id: 'sales',
+    pageId: 'hemysale',
+    icon: '💼',
+    title: 'Hemy Sale',
+    description: 'Sales pipeline tracking and revenue analytics',
+  },
+  {
+    id: 'finance',
+    pageId: 'hemyfinance',
+    icon: '💰',
+    title: 'Hemy Finance',
+    description: 'Financial operations and accounting via Business Central',
+  },
+  {
+    id: 'projects',
+    pageId: 'hemyprojects',
+    icon: '🎯',
+    title: 'Hemy Projects',
+    description: 'Project management and resource planning',
+  },
+];
 
-function TodoSection({
-  label,
-  count,
-  todos,
-  onToggle,
-  onDelete,
-}: RowHandlers & { label: string; count: number; todos: TodoItem[] }) {
-  return (
-    <section>
-      <h2 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#7C4D2F]">
-        {label}
-        <span className="rounded-full bg-[#F0EAD8] px-2 py-0.5 text-[11px] font-semibold text-[#7C4D2F]">
-          {count}
-        </span>
-      </h2>
-      <ul className="space-y-2">
-        {todos.map((todo) => (
-          <TodoRow
-            key={todo.id}
-            todo={todo}
-            onToggle={onToggle}
-            onDelete={onDelete}
-          />
-        ))}
-      </ul>
-    </section>
-  );
-}
+const stats = [
+  { value: '10+', label: 'Integrated Modules' },
+  { value: '24/7', label: 'Availability' },
+  { value: '99.9%', label: 'Uptime' },
+  { value: '∞', label: 'Scalability' },
+];
 
-function TodoRow({
-  todo,
-  onToggle,
-  onDelete,
-}: RowHandlers & { todo: TodoItem }) {
-  return (
-    <li className="group flex items-center gap-3 rounded-xl border border-[#DDD4C0] bg-white px-4 py-3 shadow-sm transition-shadow hover:shadow-md">
-      <button
-        onClick={() => onToggle(todo.id, todo.isCompleted)}
-        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-          todo.isCompleted
-            ? 'border-[#7C4D2F] bg-[#7C4D2F] text-[#FAF8F2]'
-            : 'border-[#DDD4C0] hover:border-[#7C4D2F]'
-        }`}
-        aria-label={todo.isCompleted ? 'Mark incomplete' : 'Mark complete'}
-      >
-        {todo.isCompleted && <CheckIcon className="h-3 w-3" strokeWidth={3} />}
-      </button>
-      <span
-        className={`flex-1 text-sm ${
-          todo.isCompleted ? 'text-[#C4956A] line-through' : 'text-[#021838]'
-        }`}
-      >
-        {todo.title}
-      </span>
-      <button
-        onClick={() => onDelete(todo.id)}
-        className="rounded-md p-1 text-[#DDD4C0] opacity-0 transition-all hover:bg-red-50 hover:text-red-500 focus:opacity-100 group-hover:opacity-100"
-        aria-label="Delete todo"
-      >
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </button>
-    </li>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#DDD4C0] bg-[#F0EAD8]/40 py-16 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#021838]/10 text-[#021838]">
-        <svg
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={1.8}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-          />
-        </svg>
-      </div>
-      <p className="mt-4 text-sm font-medium text-[#021838]">
-        Nothing here yet
-      </p>
-      <p className="mt-1 text-sm text-[#C4956A]">
-        Add your first task above to get started.
-      </p>
-    </div>
-  );
-}
-
-function Hemy360Icon({
-  className,
-}: {
-  className?: string;
-}) {
+function Hemy360Icon({ className }: { className?: string }) {
   return (
     <svg
       className={className}
@@ -277,7 +207,6 @@ function Hemy360Icon({
       stroke="currentColor"
       strokeWidth={2}
     >
-      {/* Letter H */}
       <text
         x="12"
         y="16"
@@ -289,7 +218,6 @@ function Hemy360Icon({
       >
         H
       </text>
-      {/* Circular arrow 360 degrees - arc with arrowhead */}
       <path
         d="M 12 3 A 9 9 0 0 1 21 12"
         fill="none"
@@ -297,28 +225,39 @@ function Hemy360Icon({
         strokeWidth="1.5"
         strokeLinecap="round"
       />
-      {/* Arrowhead */}
       <path d="M 21 12 L 19.5 10.5 L 20.5 11.5" fill="currentColor" />
     </svg>
   );
 }
 
-function CheckIcon({
-  className,
-  strokeWidth = 2.5,
-}: {
-  className?: string;
-  strokeWidth?: number;
-}) {
+function ArrowIcon({ className }: { className?: string }) {
   return (
     <svg
       className={className}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
-      strokeWidth={strokeWidth}
+      strokeWidth={2}
     >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+    </svg>
+  );
+}
+
+function ChartIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+      />
     </svg>
   );
 }
