@@ -28,26 +28,37 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
       </header>
 
       <main>
-        {/* ── Hero Section ── */}
-        <section className="relative px-4 py-20 sm:px-6 lg:px-8 xl:py-32">
-          <div className="mx-auto max-w-4xl">
+        {/* ── Hero Section with Background ── */}
+        <section 
+          className="relative px-4 py-20 sm:px-6 lg:px-8 xl:py-32"
+          style={{
+            backgroundImage: 'url(https://static.wixstatic.com/media/c9a17e_d38201ec9eb2406fb9093266937b790b~mv2.jpg/v1/fill/w_1770,h_1409,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/c9a17e_d38201ec9eb2406fb9093266937b790b~mv2.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+          }}
+        >
+          {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-black/50"></div>
+          
+          <div className="relative z-10 mx-auto max-w-4xl">
             {/* Hero Content */}
             <div className="text-center">
               {/* Badge */}
               <div className="mb-8 flex justify-center">
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#DDD4C0] bg-white px-4 py-2 text-sm font-medium text-[#7C4D2F]">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#DDD4C0] bg-white/90 px-4 py-2 text-sm font-medium text-[#7C4D2F] backdrop-blur-sm">
                   <span className="h-2 w-2 rounded-full bg-[#7C4D2F]"></span>
                   Welcome to Hemy 360
                 </span>
               </div>
 
               {/* Main Headline */}
-              <h1 className="mb-6 bg-gradient-to-r from-[#021838] via-[#0D2E5C] to-[#7C4D2F] bg-clip-text text-5xl font-bold tracking-tight text-transparent sm:text-6xl xl:text-7xl">
+              <h1 className="mb-6 text-5xl font-bold tracking-tight text-white drop-shadow-lg sm:text-6xl xl:text-7xl">
                 360° Business Intelligence
               </h1>
 
               {/* Subheadline */}
-              <p className="mx-auto mb-8 max-w-2xl text-xl text-[#7C4D2F] sm:text-2xl">
+              <p className="mx-auto mb-8 max-w-2xl text-xl text-white/90 drop-shadow-md sm:text-2xl">
                 Comprehensive enterprise solutions for modern organizations. Real-time data, intelligent analytics, and seamless integration.
               </p>
 
@@ -55,14 +66,14 @@ export function HomePage({ onNavigate }: { onNavigate?: (pageId: string) => void
               <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
                 <button
                   onClick={() => onNavigate?.('hemyai')}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#021838] px-8 py-4 font-semibold text-[#FAF8F2] shadow-lg transition-all hover:bg-[#0D2E5C] hover:shadow-xl"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#7C4D2F] px-8 py-4 font-semibold text-[#FAF8F2] shadow-lg transition-all hover:bg-[#9B6240] hover:shadow-xl"
                 >
                   <span>Explore AI Assistant</span>
                   <ArrowIcon className="h-5 w-5" />
                 </button>
                 <button
                   onClick={() => onNavigate?.('hemlivedata')}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#DDD4C0] bg-white px-8 py-4 font-semibold text-[#021838] shadow-md transition-all hover:bg-[#F0EAD8] hover:shadow-lg"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-white bg-white/10 px-8 py-4 font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:shadow-xl"
                 >
                   <span>View Live Data</span>
                   <ChartIcon className="h-5 w-5" />
